@@ -1,13 +1,13 @@
-# specmaker
+# specmaker_core
 
-SpecMaker is an AI-powered documentation assistant that guides engineers through structured, human-in-the-loop flows to produce high-quality, consistent, and AI-readable specs.
+SpecMaker is an Multi-Agent documentation system that guides engineers through structured, human-in-the-loop flows to produce high-quality, consistent, and AI-readable specs.
 
 ## Development Setup
 
 After generating your project:
 
 ```bash
-cd your-project-name
+cd specmaker_core
 
 # Install dependencies
 uv sync

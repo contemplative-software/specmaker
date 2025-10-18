@@ -1,0 +1,11 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: v1.1.0
+_src_path: gh:mjun0812/python-copier-template
+author_email: darecs00@gmail.com
+author_name: Darec Stowell
+description: SpecMaker is an AI-powered documentation assistant that guides engineers
+    through structured, human-in-the-loop flows to produce high-quality, consistent,
+    and AI-readable specs.
+package_name: specmaker_core
+project_name: specmaker
+python_version: '3.13'

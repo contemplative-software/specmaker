@@ -15,7 +15,12 @@ build-backend = "hatchling.build"
 packages = ["src/specmaker_core"]
 
 [dependency-groups]
-dev = ["pre-commit>=4.2.0", "pytest>=8.4.0", "ruff>=0.11.12"]
+dev = [
+    "pre-commit>=4.2.0",
+    "pyright>=1.1.406",
+    "pytest>=8.4.0",
+    "ruff>=0.11.12",
+]
 
 [tool.ruff]
 line-length = 100
@@ -75,3 +80,23 @@ unfixable = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.pyright]
+typeCheckingMode = "strict"
+include = ["src"]
+exclude = ["**/__pycache__", "**/node_modules", ".venv", "tests"]
+pythonVersion = "3.13"
+
+# Diagnostic settings
+reportMissingImports = true
+reportMissingTypeStubs = false
+reportUnusedImport = true
+reportUnusedVariable = "warning"
+reportPrivateUsage = "none"
+
+# Typed library support
+useLibraryCodeForTypes = true
+
+# Performance
+venvPath = "."
+venv = ".venv"

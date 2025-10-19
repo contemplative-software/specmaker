@@ -17,7 +17,10 @@ jobs:
         uses: astral-sh/setup-uv@v6
 
       - name: Format
-        run: uvx ruff format . --check --diff
+        run: cd specmaker-core && uvx ruff format . --check --diff
 
       - name: Lint
-        run: uvx ruff check --output-format=github .
+        run: cd specmaker-core && uvx ruff check --output-format=github .
+
+      - name: Type Check
+        run: cd specmaker-core && uv run --frozen pyright

@@ -31,6 +31,9 @@ Follow these guidelines precisely.
    - Format: `uv run --frozen ruff format .`
    - Check: `uv run --frozen ruff check .`
    - Fix: `uv run --frozen ruff check . --fix`
+2. Pyright
+   - Type check: `uv run --frozen pyright`
+   - Run with verbose output: `uv run --frozen pyright --verbose`
 2. Pre-commit
    - Config: `.pre-commit-config.yaml`
    - Runs: on git commit

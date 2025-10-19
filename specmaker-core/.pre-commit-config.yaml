@@ -13,3 +13,11 @@ repos:
         args: [--fix]
       # Run the formatter.
       - id: ruff-format
+  - repo: local
+    hooks:
+      - id: pyright
+        name: pyright type check
+        entry: uv run --frozen pyright
+        language: system
+        pass_filenames: false
+        types: [python]

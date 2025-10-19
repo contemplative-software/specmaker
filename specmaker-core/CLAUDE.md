@@ -25,13 +25,17 @@ Follow these guidelines precisely.
 4. Git
    - Follow the Conventional Commits style on commit messages.
 
-## Code Formatting and Linting
+## Code Formatting, Linting, Type Checking
 
 1. Ruff
    - Format: `uv run --frozen ruff format .`
    - Check: `uv run --frozen ruff check .`
    - Fix: `uv run --frozen ruff check . --fix`
-2. Pre-commit
+2. Pyright
+   - Type check: `uv run --frozen pyright`
+   - Run with verbose output: `uv run --frozen pyright --verbose`
+3. Pre-commit
    - Config: `.pre-commit-config.yaml`
    - Runs: on git commit
    - Tools: Ruff (Python)
+

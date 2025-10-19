@@ -80,3 +80,23 @@ unfixable = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.pyright]
+typeCheckingMode = "strict"
+include = ["src"]
+exclude = ["**/__pycache__", "**/node_modules", ".venv", "tests"]
+pythonVersion = "3.13"
+
+# Diagnostic settings
+reportMissingImports = true
+reportMissingTypeStubs = false
+reportUnusedImport = true
+reportUnusedVariable = "warning"
+reportPrivateUsage = "none"
+
+# Typed library support
+useLibraryCodeForTypes = true
+
+# Performance
+venvPath = "."
+venv = ".venv"

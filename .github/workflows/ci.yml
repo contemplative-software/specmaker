@@ -21,3 +21,6 @@ jobs:
 
       - name: Lint
         run: uvx ruff check --output-format=github .
+
+      - name: Type Check
+        run: uv run --frozen pyright

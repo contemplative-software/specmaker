@@ -5,7 +5,9 @@ description = "SpecMaker is an Multi-Agent documentation system that guides engi
 readme = "README.md"
 authors = [{ name = "Darec Stowell", email = "darecs00@gmail.com" }]
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "pydantic>=2.9.2",
+]
 
 [build-system]
 requires = ["hatchling"]

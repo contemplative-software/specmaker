@@ -1,9 +1,27 @@
-from specmaker_core import hello
+"""Entry point for running SpecMaker Core init flow as a script."""
+
+from __future__ import annotations
+
+from datetime import datetime
+from pathlib import Path
+
+from specmaker_core import ProjectContext, init
 
 
 def main() -> None:
-    print(hello())
+    """Initialize the current repository with default context values."""
+    context = ProjectContext(
+        project_name=Path.cwd().name,
+        repository_root=Path.cwd(),
+        description="Initialized via specmaker_core.main",
+        audience=["engineers"],
+        constraints=[],
+        style_rules="google",
+        created_by="specmaker-core",
+        created_at=datetime.utcnow(),
+    )
+    init(context)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()

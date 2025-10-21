@@ -6,6 +6,8 @@ from pathlib import Path
 import pytest
 
 from specmaker_core import ProjectContext, init
+from specmaker_core._dependencies.utils.paths import project_context_path
+from specmaker_core.errors import ValidationError
 
 
 @pytest.fixture()
@@ -42,3 +44,46 @@ def test_idempotent_init(project_context: ProjectContext) -> None:
     content = manifest_path.read_text(encoding="utf-8")
     init(project_context)
     assert manifest_path.read_text(encoding="utf-8") == content
+
+
+def test_invalid_repository_root_raises_validation_error(tmp_path: Path) -> None:
+    non_existent = tmp_path / "missing-root"
+    context = ProjectContext(
+        project_name="X",
+        repository_root=non_existent,
+        description="d",
+        audience=[],
+        constraints=[],
+        style_rules="google",
+        created_by="u",
+        created_at=datetime(2024, 1, 1, 0, 0, 0),
+    )
+    with pytest.raises(ValidationError):
+        init(context)
+
+
+def test_project_context_json_round_trip(project_context: ProjectContext) -> None:
+    init(project_context)
+    json_path = project_context_path(project_context.repository_root)
+    data = json_path.read_text(encoding="utf-8")
+    # Pydantic can parse from JSON directly via model_validate_json
+    parsed = ProjectContext.model_validate_json(data)
+    assert parsed == project_context
+
+
+@pytest.mark.skip(reason="Read-only filesystem edge case not feasible in CI")
+def test_read_only_path_edge_case(tmp_path: Path) -> None:
+    # Simulate read-only by pointing into a path we cannot create (skipped)
+    read_only_root = Path("/root/does-not-exist")
+    context = ProjectContext(
+        project_name="X",
+        repository_root=read_only_root,
+        description="d",
+        audience=[],
+        constraints=[],
+        style_rules="google",
+        created_by="u",
+        created_at=datetime(2024, 1, 1, 0, 0, 0),
+    )
+    with pytest.raises(ValidationError):
+        init(context)

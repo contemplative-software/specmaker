@@ -35,7 +35,7 @@ jobs:
 
       - name: Fetch base branch for diff coverage
         run: |
-          git fetch --no-tags --prune --depth=0 origin +refs/heads/main:refs/remotes/origin/main
+          git fetch --no-tags --prune origin +refs/heads/main:refs/remotes/origin/main
 
       - name: Diff coverage (changed files only, fail <90%)
         run: |

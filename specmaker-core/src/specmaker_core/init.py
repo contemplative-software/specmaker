@@ -44,6 +44,7 @@ def init(context: ProjectContext) -> ProjectContext:
 
 
 def _write_project_context(path: Path, context: ProjectContext) -> None:
+    """Write the project context file for the project."""
     if path.exists():
         LOGGER.info("Skipped existing %s", path)
         return
@@ -53,6 +54,7 @@ def _write_project_context(path: Path, context: ProjectContext) -> None:
 
 
 def _write_manifest(path: Path) -> None:
+    """Write the manifest file for the project."""
     if path.exists():
         LOGGER.info("Skipped existing %s", path)
         return
@@ -67,6 +69,7 @@ def _write_manifest(path: Path) -> None:
 
 
 def _write_readme(path: Path, context: ProjectContext) -> None:
+    """Write the README file for the project."""
     if path.exists():
         LOGGER.info("Skipped existing %s", path)
         return
@@ -94,10 +97,12 @@ def _write_readme(path: Path, context: ProjectContext) -> None:
 
 
 def _formatted_list(values: Iterable[str]) -> Iterable[str]:
+    """Format a list of values as a bulleted list."""
     return [f"- {value}" for value in values] or ["- (none)"]
 
 
 def _safe_write(path: Path, content: str) -> None:
+    """Write content to a file, raising an error if the write fails."""
     try:
         path.write_text(content, encoding="utf-8")
     except OSError as exc:  # pragma: no cover - I/O failure

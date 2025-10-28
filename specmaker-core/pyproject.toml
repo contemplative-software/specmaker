@@ -22,6 +22,8 @@ dev = [
     "pre-commit>=4.2.0",
     "pyright>=1.1.406",
     "pytest>=8.4.0",
+    "diff-cover>=9.2.0",
+    "pytest-cov>=6.0.0",
     "ruff>=0.11.12",
 ]
 
@@ -103,3 +105,16 @@ useLibraryCodeForTypes = true
 # Performance
 venvPath = "."
 venv = ".venv"
+
+[tool.coverage.run]
+source = ["src/specmaker_core"]
+omit = ["tests/*", "**/__pycache__/*", "**/node_modules/*"]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+fail_under = 90
+
+[tool.coverage.xml]
+output = "coverage.xml"

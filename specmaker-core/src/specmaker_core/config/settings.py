@@ -5,7 +5,7 @@ All environment variables should be accessed through this module only.
 """
 
 from pydantic import Field
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -27,6 +27,12 @@ class Settings(BaseSettings):
         durable_retries_enabled: Whether DBOS-managed automatic retries are active
           (default: False; DBOS handles retries when enabled).
     """
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+    )
 
     system_database_url: str = Field(
         default="sqlite:///specmaker.sqlite",
@@ -56,13 +62,6 @@ class Settings(BaseSettings):
         default=False,
         description="Enable DBOS-managed automatic step retries",
     )
-
-    class Config:
-        """Pydantic Settings configuration."""
-
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = False
 
 
 def get_settings() -> Settings:

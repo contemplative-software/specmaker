@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
 from specmaker_core import ProjectContext, init
@@ -18,7 +18,7 @@ def main() -> None:
         constraints=[],
         style_rules="google",
         created_by="specmaker-core",
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(UTC),
     )
     init(context)
 

@@ -76,3 +76,28 @@ def test_get_settings_returns_settings_instance(monkeypatch: pytest.MonkeyPatch)
 
     assert isinstance(settings, Settings)
     assert settings.model_provider == "openrouter"
+
+
+def test_get_settings_is_cached_singleton(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Ensure clean cache before test run
+    if hasattr(get_settings, "cache_clear"):
+        get_settings.cache_clear()  # type: ignore[attr-defined]
+
+    # Set initial env and fetch settings twice
+    monkeypatch.setenv("MODEL_PROVIDER", "testprovider")
+    first = get_settings()
+    second = get_settings()
+
+    assert first is second
+    assert first.model_provider == "testprovider"
+
+    # Change env var; cached instance should remain unchanged
+    monkeypatch.setenv("MODEL_PROVIDER", "changedprovider")
+    third = get_settings()
+
+    assert third is first
+    assert third.model_provider == "testprovider"
+
+    # Clean up cache to avoid cross-test interference
+    if hasattr(get_settings, "cache_clear"):
+        get_settings.cache_clear()  # type: ignore[attr-defined]

@@ -4,6 +4,8 @@ Using Pydantic Settings for centralized environment variable management.
 All environment variables should be accessed through this module only.
 """
 
+from functools import lru_cache
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -64,8 +66,9 @@ class Settings(BaseSettings):
     )
 
 
+@lru_cache(maxsize=1)
 def get_settings() -> Settings:
-    """Return the global Settings instance.
+    """Return the cached global Settings instance.
 
     Returns:
         Configured Settings instance with environment variables loaded.

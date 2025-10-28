@@ -299,3 +299,6 @@ tags
 # Coverage
 coverage.xml
 pytest.xml
+
+# SpecMaker
+.specmaker/

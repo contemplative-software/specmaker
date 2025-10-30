@@ -295,3 +295,10 @@ tags
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# Coverage
+coverage.xml
+pytest.xml
+
+# SpecMaker
+# .specmaker/

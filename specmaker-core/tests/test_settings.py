@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+import collections.abc
 import os
-from collections.abc import Generator
 
 import pytest
 
@@ -47,7 +47,9 @@ def test_settings_environment_overrides(clean_settings_env: dict[str, str]) -> N
 
 
 @pytest.fixture()
-def clean_settings_env(monkeypatch: pytest.MonkeyPatch) -> Generator[dict[str, str]]:
+def clean_settings_env(
+    monkeypatch: pytest.MonkeyPatch,
+) -> collections.abc.Generator[dict[str, str]]:
     initial_keys = {
         "SYSTEM_DATABASE_URL",
         "MODEL_PROVIDER",

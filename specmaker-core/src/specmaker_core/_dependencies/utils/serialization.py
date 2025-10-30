@@ -2,29 +2,29 @@
 
 from __future__ import annotations
 
+import dataclasses
+import datetime
 import json
-from dataclasses import asdict, is_dataclass
-from datetime import datetime
-from pathlib import Path
-from typing import Any
+import pathlib
+import typing
 
-from pydantic import BaseModel
+import pydantic
 
 
-def _default_serializer(value: Any) -> Any:
+def _default_serializer(value: typing.Any) -> typing.Any:
     """Convert unsupported types into JSON-friendly representations."""
-    if isinstance(value, BaseModel):
+    if isinstance(value, pydantic.BaseModel):
         return value.model_dump(mode="python")
-    if is_dataclass(value):
-        return asdict(value)  # type: ignore[arg-type]
-    if isinstance(value, Path):
+    if dataclasses.is_dataclass(value):
+        return dataclasses.asdict(value)  # type: ignore[arg-type]
+    if isinstance(value, pathlib.Path):
         return str(value)
-    if isinstance(value, datetime):
+    if isinstance(value, datetime.datetime):
         return value.isoformat()
     msg = f"Cannot serialize value of type {type(value)}"
     raise TypeError(msg)
 
 
-def to_json(data: Any, *, indent: int = 2) -> str:
+def to_json(data: typing.Any, *, indent: int = 2) -> str:
     """Serialize data to JSON with deterministic formatting."""
     return json.dumps(data, indent=indent, sort_keys=True, default=_default_serializer)

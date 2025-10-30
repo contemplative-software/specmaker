@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from datetime import datetime
-from pathlib import Path
+import datetime
+import pathlib
 
 import pytest
 
@@ -12,7 +12,7 @@ from specmaker_core.init import init
 
 
 @pytest.fixture()
-def project_context(tmp_path: Path) -> ProjectContext:
+def project_context(tmp_path: pathlib.Path) -> ProjectContext:
     return ProjectContext(
         project_name="Sample Project",
         repository_root=tmp_path,
@@ -21,7 +21,7 @@ def project_context(tmp_path: Path) -> ProjectContext:
         constraints=["No external network calls"],
         style_rules="google",
         created_by="test-user",
-        created_at=datetime(2024, 1, 1, 12, 0, 0),
+        created_at=datetime.datetime(2024, 1, 1, 12, 0, 0),
     )
 
 
@@ -47,7 +47,7 @@ def test_idempotent_init(project_context: ProjectContext) -> None:
     assert manifest_path.read_text(encoding="utf-8") == content
 
 
-def test_invalid_repository_root_raises_validation_error(tmp_path: Path) -> None:
+def test_invalid_repository_root_raises_validation_error(tmp_path: pathlib.Path) -> None:
     non_existent = tmp_path / "missing-root"
     context = ProjectContext(
         project_name="X",
@@ -57,7 +57,7 @@ def test_invalid_repository_root_raises_validation_error(tmp_path: Path) -> None
         constraints=[],
         style_rules="google",
         created_by="u",
-        created_at=datetime(2024, 1, 1, 0, 0, 0),
+        created_at=datetime.datetime(2024, 1, 1, 0, 0, 0),
     )
     with pytest.raises(ValidationError):
         init(context)
@@ -73,9 +73,9 @@ def test_project_context_json_round_trip(project_context: ProjectContext) -> Non
 
 
 @pytest.mark.skip(reason="Read-only filesystem edge case not feasible in CI")
-def test_read_only_path_edge_case(tmp_path: Path) -> None:
+def test_read_only_path_edge_case(tmp_path: pathlib.Path) -> None:
     # Simulate read-only by pointing into a path we cannot create (skipped)
-    read_only_root = Path("/root/does-not-exist")
+    read_only_root = pathlib.Path("/root/does-not-exist")
     context = ProjectContext(
         project_name="X",
         repository_root=read_only_root,
@@ -84,7 +84,7 @@ def test_read_only_path_edge_case(tmp_path: Path) -> None:
         constraints=[],
         style_rules="google",
         created_by="u",
-        created_at=datetime(2024, 1, 1, 0, 0, 0),
+        created_at=datetime.datetime(2024, 1, 1, 0, 0, 0),
     )
     with pytest.raises(ValidationError):
         init(context)

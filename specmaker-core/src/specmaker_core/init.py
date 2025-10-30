@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import collections.abc
 import logging
-from collections.abc import Iterable
-from pathlib import Path
+import pathlib
 
 from specmaker_core._dependencies.errors import SpecMakerError, ValidationError
 from specmaker_core._dependencies.schemas.shared import ProjectContext
@@ -27,7 +27,7 @@ class InitError(SpecMakerError):
 
 def init(context: ProjectContext) -> ProjectContext:
     """Create the `.specmaker/` bootstrapped project structure."""
-    root_dir = Path(context.repository_root)
+    root_dir = pathlib.Path(context.repository_root)
     try:
         spec_dir = specmaker_root(root_dir)
     except FileNotFoundError as exc:  # pragma: no cover - defensive branch
@@ -43,7 +43,7 @@ def init(context: ProjectContext) -> ProjectContext:
     return context
 
 
-def _write_project_context(path: Path, context: ProjectContext) -> None:
+def _write_project_context(path: pathlib.Path, context: ProjectContext) -> None:
     """Write the project context file for the project."""
     if path.exists():
         LOGGER.info("Skipped existing %s", path)
@@ -53,7 +53,7 @@ def _write_project_context(path: Path, context: ProjectContext) -> None:
     LOGGER.info("Wrote project context to %s", path)
 
 
-def _write_manifest(path: Path) -> None:
+def _write_manifest(path: pathlib.Path) -> None:
     """Write the manifest file for the project."""
     if path.exists():
         LOGGER.info("Skipped existing %s", path)
@@ -68,7 +68,7 @@ def _write_manifest(path: Path) -> None:
     LOGGER.info("Wrote manifest to %s", path)
 
 
-def _write_readme(path: Path, context: ProjectContext) -> None:
+def _write_readme(path: pathlib.Path, context: ProjectContext) -> None:
     """Write the README file for the project."""
     if path.exists():
         LOGGER.info("Skipped existing %s", path)
@@ -96,12 +96,12 @@ def _write_readme(path: Path, context: ProjectContext) -> None:
     LOGGER.info("Wrote README to %s", path)
 
 
-def _formatted_list(values: Iterable[str]) -> Iterable[str]:
+def _formatted_list(values: collections.abc.Iterable[str]) -> collections.abc.Iterable[str]:
     """Format a list of values as a bulleted list."""
     return [f"- {value}" for value in values] or ["- (none)"]
 
 
-def _safe_write(path: Path, content: str) -> None:
+def _safe_write(path: pathlib.Path, content: str) -> None:
     """Write content to a file, raising an error if the write fails."""
     try:
         path.write_text(content, encoding="utf-8")

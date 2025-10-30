@@ -1,40 +1,40 @@
 from __future__ import annotations
 
+import dataclasses
+import datetime
 import json
-from dataclasses import dataclass
-from datetime import UTC, datetime
-from pathlib import Path
-from typing import Any
+import pathlib
+import typing
 
+import pydantic
 import pytest
-from pydantic import BaseModel
 
 from specmaker_core._dependencies.utils.serialization import to_json
 
 
-class ExampleModel(BaseModel):
+class ExampleModel(pydantic.BaseModel):
     value: int
     label: str
-    timestamp: datetime
+    timestamp: datetime.datetime
 
 
-@dataclass
+@dataclasses.dataclass
 class ExampleDataclass:
     value: int
     flag: bool
 
 
-def _round_trip(data: Any) -> Any:
+def _round_trip(data: typing.Any) -> typing.Any:
     """Serialize data with to_json and deserialize using json.loads."""
     serialized = to_json(data)
     return json.loads(serialized)
 
 
 def test_to_json_handles_supported_types() -> None:
-    expected_timestamp = datetime(2024, 1, 1, 12, 0, 0, tzinfo=UTC)
+    expected_timestamp = datetime.datetime(2024, 1, 1, 12, 0, 0, tzinfo=datetime.UTC)
     model = ExampleModel(value=1, label="sample", timestamp=expected_timestamp)
     dataclass_instance = ExampleDataclass(value=2, flag=True)
-    sample_path = Path("/tmp/specmaker")
+    sample_path = pathlib.Path("/tmp/specmaker")
 
     data = {
         "model": model,

@@ -301,4 +301,4 @@ coverage.xml
 pytest.xml
 
 # SpecMaker
-# .specmaker/
+.specmaker/

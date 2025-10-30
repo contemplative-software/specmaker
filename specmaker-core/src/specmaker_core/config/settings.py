@@ -22,6 +22,7 @@ class Settings(pydantic_settings.BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
+        extra="ignore",  # Ignore extra environment variables not defined in model
     )
 
     system_database_url: str = pydantic.Field(

@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-import collections.abc
+import importlib.resources
 import logging
 import pathlib
+
+import jinja2
 
 from ._dependencies import errors
 from ._dependencies.schemas import shared
@@ -66,31 +68,13 @@ def _write_readme(path: pathlib.Path, context: shared.ProjectContext) -> None:
         LOGGER.info("Skipped existing %s", path)
         return
 
-    lines = [
-        f"# SpecMaker Project: {context.project_name}",
-        "",
-        "## Description",
-        context.description,
-        "",
-        "## Audience",
-        *(_formatted_list(context.audience)),
-        "",
-        "## Constraints",
-        *(_formatted_list(context.constraints)),
-        "",
-        "## Metadata",
-        f"- Created by: {context.created_by}",
-        f"- Created at: {context.created_at.isoformat()}",
-        f"- Style rules: {context.style_rules}",
-        "",
-    ]
-    _safe_write(path, "\n".join(lines))
+    template_package = importlib.resources.files("specmaker_core._dependencies.templates")
+    template_content = (template_package / "readme.jinja2").read_text(encoding="utf-8")
+    template = jinja2.Template(template_content)
+
+    rendered = template.render(context=context)
+    _safe_write(path, rendered)
     LOGGER.info("Wrote README to %s", path)
-
-
-def _formatted_list(values: collections.abc.Iterable[str]) -> collections.abc.Iterable[str]:
-    """Format a list of values as a bulleted list."""
-    return [f"- {value}" for value in values] or ["- (none)"]
 
 
 def _safe_write(path: pathlib.Path, content: str) -> None:

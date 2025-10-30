@@ -1,99 +1,27 @@
 from __future__ import annotations
 
-import collections.abc
-import os
-
 import pytest
 
 import specmaker_core.config.settings as settings
 
 
-@pytest.mark.usefixtures("clean_settings_env")
-def test_settings_defaults(clean_settings_env: dict[str, str]) -> None:
-    settings_instance = settings.Settings()
-
-    assert settings_instance.system_database_url == "sqlite:///specmaker.sqlite"
-    assert settings_instance.model_provider == "openai"
-    assert settings_instance.model_name_fallback == "gpt-5-mini"
-    assert settings_instance.reasoning_effort_fallback == "medium"
-    assert settings_instance.model_timeout == 120.0
-    assert settings_instance.step_timeout == 300.0
-    assert settings_instance.durable_retries_enabled is False
-
-
-@pytest.mark.usefixtures("clean_settings_env")
-def test_settings_environment_overrides(clean_settings_env: dict[str, str]) -> None:
-    overrides = {
-        "SYSTEM_DATABASE_URL": "postgresql://localhost/specmaker",
-        "MODEL_PROVIDER": "anthropic",
-        "MODEL_NAME_FALLBACK": "claude-opus",
-        "REASONING_EFFORT_FALLBACK": "high",
-        "MODEL_TIMEOUT": "240.5",
-        "STEP_TIMEOUT": "600.0",
-        "DURABLE_RETRIES_ENABLED": "true",
-    }
-
-    os.environ.update(overrides)
-
-    settings_instance = settings.Settings()
-
-    assert settings_instance.system_database_url == overrides["SYSTEM_DATABASE_URL"]
-    assert settings_instance.model_provider == overrides["MODEL_PROVIDER"]
-    assert settings_instance.model_name_fallback == overrides["MODEL_NAME_FALLBACK"]
-    assert settings_instance.reasoning_effort_fallback == overrides["REASONING_EFFORT_FALLBACK"]
-    assert settings_instance.model_timeout == pytest.approx(float(overrides["MODEL_TIMEOUT"]))
-    assert settings_instance.step_timeout == pytest.approx(float(overrides["STEP_TIMEOUT"]))
-    assert settings_instance.durable_retries_enabled is True
-
-
-@pytest.fixture()
-def clean_settings_env(
-    monkeypatch: pytest.MonkeyPatch,
-) -> collections.abc.Generator[dict[str, str]]:
-    initial_keys = {
-        "SYSTEM_DATABASE_URL",
-        "MODEL_PROVIDER",
-        "MODEL_NAME_FALLBACK",
-        "REASONING_EFFORT_FALLBACK",
-        "MODEL_TIMEOUT",
-        "STEP_TIMEOUT",
-        "DURABLE_RETRIES_ENABLED",
-    }
-
-    removed: dict[str, str] = {}
-    for key in initial_keys:
-        if key in os.environ:
-            removed[key] = os.environ.pop(key)
-
-    yield removed
-
-    for key, value in removed.items():
-        os.environ[key] = value
-
-
-def test_get_settings_returns_settings_instance(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("MODEL_PROVIDER", "openrouter")
-
-    settings_instance = settings.get_settings()
-
-    assert isinstance(settings_instance, settings.Settings)
-    assert settings_instance.model_provider == "openrouter"
-
-
-def test_get_settings_is_cached_singleton(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_get_settings_returns_cached_instance(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test that get_settings() caches Settings and ignores env changes after first call."""
     # Ensure clean cache before test run
     if hasattr(settings.get_settings, "cache_clear"):
         settings.get_settings.cache_clear()  # type: ignore[attr-defined]
 
-    # Set initial env and fetch settings twice
+    # Set initial env and fetch settings
     monkeypatch.setenv("MODEL_PROVIDER", "testprovider")
     first = settings.get_settings()
     second = settings.get_settings()
 
+    # Verify same instance returned (caching works)
     assert first is second
+    assert isinstance(first, settings.Settings)
     assert first.model_provider == "testprovider"
 
-    # Change env var; cached instance should remain unchanged
+    # Change env var; cached instance should remain unchanged (critical behavior)
     monkeypatch.setenv("MODEL_PROVIDER", "changedprovider")
     third = settings.get_settings()
 

@@ -479,6 +479,7 @@ name = "specmaker"
 version = "0.0.1"
 source = { editable = "." }
 dependencies = [
+    { name = "jinja2" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
 ]
@@ -495,6 +496,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "jinja2", specifier = ">=3.1.6" },
     { name = "pydantic", specifier = ">=2.9.2" },
     { name = "pydantic-settings", specifier = ">=2.11.0" },
 ]

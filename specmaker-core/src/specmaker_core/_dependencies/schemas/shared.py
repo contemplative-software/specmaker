@@ -27,9 +27,7 @@ class ProjectContext(pydantic.BaseModel):
     def _strip_list_entries(cls, values: list[str]) -> list[str]:
         trimmed_values = [value.strip() for value in values]
         if any(not entry for entry in trimmed_values):
-            raise ValueError(
-                "Audience and constraint entries must be non-empty strings."
-            )
+            raise ValueError("Audience and constraint entries must be non-empty strings.")
         return trimmed_values
 
     @pydantic.model_validator(mode="after")

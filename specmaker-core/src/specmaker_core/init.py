@@ -6,44 +6,36 @@ import collections.abc
 import logging
 import pathlib
 
-from specmaker_core._dependencies.errors import SpecMakerError, ValidationError
-from specmaker_core._dependencies.schemas.shared import ProjectContext
-from specmaker_core._dependencies.utils.paths import (
-    PROJECT_CONTEXT_FILENAME,
-    README_FILENAME,
-    manifest_path,
-    project_context_path,
-    readme_path,
-    specmaker_root,
-)
-from specmaker_core._dependencies.utils.serialization import to_json
+from ._dependencies import errors
+from ._dependencies.schemas import shared
+from ._dependencies.utils import paths, serialization
 
 LOGGER = logging.getLogger(__name__)
 
 
-class InitError(SpecMakerError):
+class InitError(errors.SpecMakerError):
     """Raised when the init flow fails to write expected files."""
 
 
-def init(context: ProjectContext) -> ProjectContext:
+def init(context: shared.ProjectContext) -> shared.ProjectContext:
     """Create the `.specmaker/` bootstrapped project structure."""
     root_dir = pathlib.Path(context.repository_root)
     try:
-        spec_dir = specmaker_root(root_dir)
+        spec_dir = paths.specmaker_root(root_dir)
     except FileNotFoundError as exc:  # pragma: no cover - defensive branch
         msg = f"Repository root does not exist: {root_dir}"
-        raise ValidationError(msg) from exc
+        raise errors.ValidationError(msg) from exc
 
     spec_dir.mkdir(parents=True, exist_ok=True)
     LOGGER.info("Ensured SpecMaker directory at %s", spec_dir)
 
-    _write_project_context(project_context_path(root_dir), context)
-    _write_manifest(manifest_path(root_dir))
-    _write_readme(readme_path(root_dir), context)
+    _write_project_context(paths.project_context_path(root_dir), context)
+    _write_manifest(paths.manifest_path(root_dir))
+    _write_readme(paths.readme_path(root_dir), context)
     return context
 
 
-def _write_project_context(path: pathlib.Path, context: ProjectContext) -> None:
+def _write_project_context(path: pathlib.Path, context: shared.ProjectContext) -> None:
     """Write the project context file for the project."""
     if path.exists():
         LOGGER.info("Skipped existing %s", path)
@@ -62,13 +54,13 @@ def _write_manifest(path: pathlib.Path) -> None:
     manifest = {
         "schema": "specmaker.init-manifest",
         "version": 1,
-        "files": [str(PROJECT_CONTEXT_FILENAME), str(README_FILENAME)],
+        "files": [str(paths.PROJECT_CONTEXT_FILENAME), str(paths.README_FILENAME)],
     }
-    _safe_write(path, to_json(manifest))
+    _safe_write(path, serialization.to_json(manifest))
     LOGGER.info("Wrote manifest to %s", path)
 
 
-def _write_readme(path: pathlib.Path, context: ProjectContext) -> None:
+def _write_readme(path: pathlib.Path, context: shared.ProjectContext) -> None:
     """Write the README file for the project."""
     if path.exists():
         LOGGER.info("Skipped existing %s", path)

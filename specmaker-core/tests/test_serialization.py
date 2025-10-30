@@ -9,7 +9,7 @@ import typing
 import pydantic
 import pytest
 
-from specmaker_core._dependencies.utils.serialization import to_json
+import specmaker_core._dependencies.utils.serialization as serialization
 
 
 class ExampleModel(pydantic.BaseModel):
@@ -26,7 +26,7 @@ class ExampleDataclass:
 
 def _round_trip(data: typing.Any) -> typing.Any:
     """Serialize data with to_json and deserialize using json.loads."""
-    serialized = to_json(data)
+    serialized = serialization.to_json(data)
     return json.loads(serialized)
 
 
@@ -59,4 +59,4 @@ def test_to_json_handles_supported_types() -> None:
 
 def test_to_json_raises_type_error_for_unknown_type() -> None:
     with pytest.raises(TypeError, match="Cannot serialize value of type <class 'complex'>"):
-        to_json({"value": complex(1, 2)})
+        serialization.to_json({"value": complex(1, 2)})

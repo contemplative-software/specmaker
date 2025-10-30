@@ -5,20 +5,20 @@ import os
 
 import pytest
 
-from specmaker_core.config.settings import Settings, get_settings
+import specmaker_core.config.settings as settings
 
 
 @pytest.mark.usefixtures("clean_settings_env")
 def test_settings_defaults(clean_settings_env: dict[str, str]) -> None:
-    settings = Settings()
+    settings_instance = settings.Settings()
 
-    assert settings.system_database_url == "sqlite:///specmaker.sqlite"
-    assert settings.model_provider == "openai"
-    assert settings.model_name_fallback == "gpt-5-mini"
-    assert settings.reasoning_effort_fallback == "medium"
-    assert settings.model_timeout == 120.0
-    assert settings.step_timeout == 300.0
-    assert settings.durable_retries_enabled is False
+    assert settings_instance.system_database_url == "sqlite:///specmaker.sqlite"
+    assert settings_instance.model_provider == "openai"
+    assert settings_instance.model_name_fallback == "gpt-5-mini"
+    assert settings_instance.reasoning_effort_fallback == "medium"
+    assert settings_instance.model_timeout == 120.0
+    assert settings_instance.step_timeout == 300.0
+    assert settings_instance.durable_retries_enabled is False
 
 
 @pytest.mark.usefixtures("clean_settings_env")
@@ -35,15 +35,15 @@ def test_settings_environment_overrides(clean_settings_env: dict[str, str]) -> N
 
     os.environ.update(overrides)
 
-    settings = Settings()
+    settings_instance = settings.Settings()
 
-    assert settings.system_database_url == overrides["SYSTEM_DATABASE_URL"]
-    assert settings.model_provider == overrides["MODEL_PROVIDER"]
-    assert settings.model_name_fallback == overrides["MODEL_NAME_FALLBACK"]
-    assert settings.reasoning_effort_fallback == overrides["REASONING_EFFORT_FALLBACK"]
-    assert settings.model_timeout == pytest.approx(float(overrides["MODEL_TIMEOUT"]))
-    assert settings.step_timeout == pytest.approx(float(overrides["STEP_TIMEOUT"]))
-    assert settings.durable_retries_enabled is True
+    assert settings_instance.system_database_url == overrides["SYSTEM_DATABASE_URL"]
+    assert settings_instance.model_provider == overrides["MODEL_PROVIDER"]
+    assert settings_instance.model_name_fallback == overrides["MODEL_NAME_FALLBACK"]
+    assert settings_instance.reasoning_effort_fallback == overrides["REASONING_EFFORT_FALLBACK"]
+    assert settings_instance.model_timeout == pytest.approx(float(overrides["MODEL_TIMEOUT"]))
+    assert settings_instance.step_timeout == pytest.approx(float(overrides["STEP_TIMEOUT"]))
+    assert settings_instance.durable_retries_enabled is True
 
 
 @pytest.fixture()
@@ -74,32 +74,32 @@ def clean_settings_env(
 def test_get_settings_returns_settings_instance(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("MODEL_PROVIDER", "openrouter")
 
-    settings = get_settings()
+    settings_instance = settings.get_settings()
 
-    assert isinstance(settings, Settings)
-    assert settings.model_provider == "openrouter"
+    assert isinstance(settings_instance, settings.Settings)
+    assert settings_instance.model_provider == "openrouter"
 
 
 def test_get_settings_is_cached_singleton(monkeypatch: pytest.MonkeyPatch) -> None:
     # Ensure clean cache before test run
-    if hasattr(get_settings, "cache_clear"):
-        get_settings.cache_clear()  # type: ignore[attr-defined]
+    if hasattr(settings.get_settings, "cache_clear"):
+        settings.get_settings.cache_clear()  # type: ignore[attr-defined]
 
     # Set initial env and fetch settings twice
     monkeypatch.setenv("MODEL_PROVIDER", "testprovider")
-    first = get_settings()
-    second = get_settings()
+    first = settings.get_settings()
+    second = settings.get_settings()
 
     assert first is second
     assert first.model_provider == "testprovider"
 
     # Change env var; cached instance should remain unchanged
     monkeypatch.setenv("MODEL_PROVIDER", "changedprovider")
-    third = get_settings()
+    third = settings.get_settings()
 
     assert third is first
     assert third.model_provider == "testprovider"
 
     # Clean up cache to avoid cross-test interference
-    if hasattr(get_settings, "cache_clear"):
-        get_settings.cache_clear()  # type: ignore[attr-defined]
+    if hasattr(settings.get_settings, "cache_clear"):
+        settings.get_settings.cache_clear()  # type: ignore[attr-defined]

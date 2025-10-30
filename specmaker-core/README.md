@@ -12,6 +12,11 @@ cd specmaker_core
 # Install dependencies
 uv sync
 
+# Set up environment variables
+# Copy .env.example to .env and fill in your values
+cp .env.example .env
+# Edit .env with your actual configuration (e.g., OpenAI API key)
+
 # Install pre-commit hooks
 uv run pre-commit install
 

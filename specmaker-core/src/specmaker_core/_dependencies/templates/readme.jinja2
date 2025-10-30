@@ -1,0 +1,28 @@
+# SpecMaker Project: {{ context.project_name }}
+
+## Description
+{{ context.description }}
+
+## Audience
+{% if context.audience %}
+{% for item in context.audience %}
+- {{ item }}
+{% endfor %}
+{% else %}
+- (none)
+{% endif %}
+
+## Constraints
+{% if context.constraints %}
+{% for item in context.constraints %}
+- {{ item }}
+{% endfor %}
+{% else %}
+- (none)
+{% endif %}
+
+## Metadata
+- Created by: {{ context.created_by }}
+- Created at: {{ context.created_at.isoformat() }}
+- Style rules: {{ context.style_rules }}
+

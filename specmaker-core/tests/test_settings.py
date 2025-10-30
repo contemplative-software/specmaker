@@ -14,8 +14,8 @@ def test_settings_defaults(clean_settings_env: dict[str, str]) -> None:
 
     assert settings.system_database_url == "sqlite:///specmaker.sqlite"
     assert settings.model_provider == "openai"
-    assert settings.model_name == "gpt-4o"
-    assert settings.reasoning_effort == "medium"
+    assert settings.model_name_fallback == "gpt-5-mini"
+    assert settings.reasoning_effort_fallback == "medium"
     assert settings.model_timeout == 120.0
     assert settings.step_timeout == 300.0
     assert settings.durable_retries_enabled is False
@@ -26,8 +26,8 @@ def test_settings_environment_overrides(clean_settings_env: dict[str, str]) -> N
     overrides = {
         "SYSTEM_DATABASE_URL": "postgresql://localhost/specmaker",
         "MODEL_PROVIDER": "anthropic",
-        "MODEL_NAME": "claude-opus",
-        "REASONING_EFFORT": "high",
+        "MODEL_NAME_FALLBACK": "claude-opus",
+        "REASONING_EFFORT_FALLBACK": "high",
         "MODEL_TIMEOUT": "240.5",
         "STEP_TIMEOUT": "600.0",
         "DURABLE_RETRIES_ENABLED": "true",
@@ -39,8 +39,8 @@ def test_settings_environment_overrides(clean_settings_env: dict[str, str]) -> N
 
     assert settings.system_database_url == overrides["SYSTEM_DATABASE_URL"]
     assert settings.model_provider == overrides["MODEL_PROVIDER"]
-    assert settings.model_name == overrides["MODEL_NAME"]
-    assert settings.reasoning_effort == overrides["REASONING_EFFORT"]
+    assert settings.model_name_fallback == overrides["MODEL_NAME_FALLBACK"]
+    assert settings.reasoning_effort_fallback == overrides["REASONING_EFFORT_FALLBACK"]
     assert settings.model_timeout == pytest.approx(float(overrides["MODEL_TIMEOUT"]))
     assert settings.step_timeout == pytest.approx(float(overrides["STEP_TIMEOUT"]))
     assert settings.durable_retries_enabled is True
@@ -53,8 +53,8 @@ def clean_settings_env(
     initial_keys = {
         "SYSTEM_DATABASE_URL",
         "MODEL_PROVIDER",
-        "MODEL_NAME",
-        "REASONING_EFFORT",
+        "MODEL_NAME_FALLBACK",
+        "REASONING_EFFORT_FALLBACK",
         "MODEL_TIMEOUT",
         "STEP_TIMEOUT",
         "DURABLE_RETRIES_ENABLED",

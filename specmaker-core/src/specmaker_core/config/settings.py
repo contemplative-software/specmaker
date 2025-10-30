@@ -32,13 +32,13 @@ class Settings(pydantic_settings.BaseSettings):
         default="openai",
         description="LLM provider key",
     )
-    model_name: str = pydantic.Field(
-        default="gpt-4o",
-        description="Default model identifier",
+    model_name_fallback: str = pydantic.Field(
+        default="gpt-5-mini",
+        description="Fallback model identifier used when not specified per agent",
     )
-    reasoning_effort: str = pydantic.Field(
+    reasoning_effort_fallback: str = pydantic.Field(
         default="medium",
-        description="Reasoning effort level for extended thinking models",
+        description="Fallback reasoning effort for thinking models when not specified per agent",
     )
     model_timeout: float = pydantic.Field(
         default=120.0,

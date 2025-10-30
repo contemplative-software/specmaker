@@ -25,7 +25,12 @@ class ProjectContext(pydantic.BaseModel):
     @pydantic.field_validator("audience", "constraints", mode="after")
     @classmethod
     def _strip_list_entries(cls, values: list[str]) -> list[str]:
-        return [value.strip() for value in values]
+        trimmed_values = [value.strip() for value in values]
+        if any(not entry for entry in trimmed_values):
+            raise ValueError(
+                "Audience and constraint entries must be non-empty strings."
+            )
+        return trimmed_values
 
     @pydantic.model_validator(mode="after")
     def _normalize(self) -> ProjectContext:

@@ -5,9 +5,10 @@ from pathlib import Path
 
 import pytest
 
-from specmaker_core import ProjectContext, init
+from specmaker_core._dependencies.errors import ValidationError
+from specmaker_core._dependencies.schemas.shared import ProjectContext
 from specmaker_core._dependencies.utils.paths import project_context_path
-from specmaker_core.errors import ValidationError
+from specmaker_core.init import init
 
 
 @pytest.fixture()

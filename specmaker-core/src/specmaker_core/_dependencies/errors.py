@@ -9,6 +9,3 @@ class SpecMakerError(Exception):
 
 class ValidationError(SpecMakerError):
     """Raised when incoming data fails validation rules."""
-
-
-__all__ = ["SpecMakerError", "ValidationError"]

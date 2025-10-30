@@ -5,7 +5,8 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from pathlib import Path
 
-from specmaker_core import ProjectContext, init
+from specmaker_core._dependencies.schemas.shared import ProjectContext
+from specmaker_core.init import init
 
 
 def main() -> None:

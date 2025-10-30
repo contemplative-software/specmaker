@@ -34,7 +34,7 @@ class Settings(pydantic_settings.BaseSettings):
         description="LLM provider key",
     )
     model_name_fallback: str = pydantic.Field(
-        default="gpt-5-mini",
+        default="gpt-5",
         description="Fallback model identifier used when not specified per agent",
     )
     reasoning_effort_fallback: str = pydantic.Field(

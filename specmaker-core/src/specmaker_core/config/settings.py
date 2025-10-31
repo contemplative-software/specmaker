@@ -26,7 +26,7 @@ class Settings(pydantic_settings.BaseSettings):
     )
 
     system_database_url: str = pydantic.Field(
-        default="sqlite:///specmaker.sqlite",
+        default="sqlite:///./.specmaker/specmaker.db",
         description="SQLite database URL for DBOS durability",
     )
     model_provider: str = pydantic.Field(

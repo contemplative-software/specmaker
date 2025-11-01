@@ -29,6 +29,3 @@ def version_stamp(timestamp: datetime | None = None) -> str:
     """Return a UTC timestamp string suitable for versioning records."""
     moment = timestamp or datetime.now(tz=UTC)
     return moment.strftime("%Y%m%d%H%M%S")
-
-
-__all__ = ["DEFAULT_DB_PATH", "ensure_parent", "open_db", "version_stamp"]

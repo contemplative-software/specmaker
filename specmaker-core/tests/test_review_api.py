@@ -11,8 +11,8 @@ import pytest
 from pydantic_ai import DeferredToolRequests, DeferredToolResults
 from pydantic_ai.messages import ToolCallPart
 
-from specmaker_core._dependencies.schemas.shared import ProjectContext
-from specmaker_core.contracts.documents import Manuscript, ReviewReport
+from specmaker_core._dependencies.schemas import documents as _documents
+from specmaker_core._dependencies.schemas import shared as _shared
 from specmaker_core.persistence.storage import open_db
 from specmaker_core.review import Completed, Deferred, list_agents, resume, review
 
@@ -33,8 +33,8 @@ class StubRunResult:
         return self._timestamp
 
 
-def _project_context(tmp_path: Path) -> ProjectContext:
-    return ProjectContext(
+def _project_context(tmp_path: Path) -> _shared.ProjectContext:
+    return _shared.ProjectContext(
         project_name="spec",
         repository_root=tmp_path,
         description="Test context",
@@ -46,12 +46,12 @@ def _project_context(tmp_path: Path) -> ProjectContext:
     )
 
 
-def _manuscript() -> Manuscript:
-    return Manuscript(title="Sample", content_markdown="# Heading", style_rules="google")
+def _manuscript() -> _documents.Manuscript:
+    return _documents.Manuscript(title="Sample", content_markdown="# Heading", style_rules="google")
 
 
-def _report() -> ReviewReport:
-    return ReviewReport(
+def _report() -> _documents.ReviewReport:
+    return _documents.ReviewReport(
         status="pass",
         summary="Looks good",
         issues=[],
@@ -73,7 +73,7 @@ async def test_review_completed_persists_record(
     timestamp = datetime.datetime.now(datetime.UTC)
     stub_result = StubRunResult(report, "run-completed", [], timestamp)
 
-    async def fake_start_review(arg: Manuscript) -> StubRunResult:
+    async def fake_start_review(arg: _documents.Manuscript) -> StubRunResult:
         assert arg == manuscript
         await asyncio.sleep(0)
         return stub_result
@@ -133,7 +133,7 @@ async def test_review_deferred_resume_roundtrip(
         datetime.datetime.now(datetime.UTC),
     )
 
-    async def fake_start_review(arg: Manuscript) -> StubRunResult:
+    async def fake_start_review(arg: _documents.Manuscript) -> StubRunResult:
         assert arg == manuscript
         await asyncio.sleep(0)
         return initial_result

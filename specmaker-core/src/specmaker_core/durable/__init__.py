@@ -39,6 +39,3 @@ async def event_stream_handler(
     agent_name = getattr(ctx, "agent_name", REVIEWER_NAME)
     async for event in stream:
         LOGGER.info("[%s] %s", agent_name, event)
-
-
-__all__ = ["MCP_STEP_CONFIG", "MODEL_STEP_CONFIG", "event_stream_handler", "get_dbos_reviewer"]

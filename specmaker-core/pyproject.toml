@@ -102,6 +102,12 @@ reportUnusedImport = true
 reportUnusedVariable = "warning"
 reportPrivateUsage = "none"
 
+# Per-file ignores - allow unused imports in __init__.py for public API re-exports
+[[tool.pyright.executionEnvironments]]
+root = "src"
+include = ["**/__init__.py"]
+reportUnusedImport = false
+
 # Typed library support
 useLibraryCodeForTypes = true
 

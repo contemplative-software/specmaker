@@ -8,8 +8,8 @@ from typing import Final
 
 import pydantic
 
-from specmaker_core._dependencies.schemas.shared import ProjectContext
-from specmaker_core.contracts.documents import Manuscript, ReviewReport
+from specmaker_core._dependencies.schemas import documents as _documents
+from specmaker_core._dependencies.schemas import shared as _shared
 
 
 class ReviewMetadata(pydantic.BaseModel):
@@ -18,9 +18,9 @@ class ReviewMetadata(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(frozen=True)
 
     record_id: str
-    project_context: ProjectContext
-    manuscript: Manuscript
-    review_report: ReviewReport
+    project_context: _shared.ProjectContext
+    manuscript: _documents.Manuscript
+    review_report: _documents.ReviewReport
     run_id: str
     agent_name: str
     version: str
@@ -36,9 +36,9 @@ class ReviewMetadata(pydantic.BaseModel):
 
 def build_review_metadata(
     *,
-    project_context: ProjectContext,
-    manuscript: Manuscript,
-    review_report: ReviewReport,
+    project_context: _shared.ProjectContext,
+    manuscript: _documents.Manuscript,
+    review_report: _documents.ReviewReport,
     run_id: str,
     agent_name: str,
     version: str,
@@ -75,11 +75,3 @@ def metadata_to_json(metadata: ReviewMetadata) -> dict[str, str]:
         model = getattr(metadata, field)
         json_payload[field] = model.model_dump_json()
     return json_payload
-
-
-__all__ = [
-    "SERIALIZED_FIELDS",
-    "ReviewMetadata",
-    "build_review_metadata",
-    "metadata_to_json",
-]

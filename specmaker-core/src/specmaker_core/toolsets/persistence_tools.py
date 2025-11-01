@@ -7,8 +7,8 @@ import sqlite3
 from collections.abc import Sequence
 from typing import cast
 
-from specmaker_core._dependencies.schemas.shared import ProjectContext
-from specmaker_core.contracts.documents import Manuscript, ReviewReport
+from specmaker_core._dependencies.schemas import documents as _documents
+from specmaker_core._dependencies.schemas import shared as _shared
 from specmaker_core.persistence.metadata import ReviewMetadata, metadata_to_json
 
 CREATE_TABLE_SQL = """
@@ -127,9 +127,9 @@ def _row_to_metadata(row: Sequence[object]) -> ReviewMetadata:
     ) = row
 
     created_at_dt = datetime.datetime.fromisoformat(str(created_at))
-    project_context = ProjectContext.model_validate_json(str(project_context_json))
-    manuscript = Manuscript.model_validate_json(str(manuscript_json))
-    review_report = ReviewReport.model_validate_json(str(review_report_json))
+    project_context = _shared.ProjectContext.model_validate_json(str(project_context_json))
+    manuscript = _documents.Manuscript.model_validate_json(str(manuscript_json))
+    review_report = _documents.ReviewReport.model_validate_json(str(review_report_json))
 
     return ReviewMetadata(
         record_id=str(record_id),
@@ -143,6 +143,3 @@ def _row_to_metadata(row: Sequence[object]) -> ReviewMetadata:
         approvals_requested=cast(int, approvals_requested),
         approvals_granted=cast(int, approvals_granted),
     )
-
-
-__all__ = ["ensure_schema", "load_review_records", "save_review_record"]

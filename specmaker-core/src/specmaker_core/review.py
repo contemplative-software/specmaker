@@ -13,11 +13,11 @@ from pydantic_ai import DeferredToolRequests, DeferredToolResults, ToolApproved
 from pydantic_ai.messages import ModelMessage
 from pydantic_ai.run import AgentRunResult
 
-from specmaker_core._dependencies.schemas.shared import ProjectContext
+from specmaker_core._dependencies.schemas import documents as _documents
+from specmaker_core._dependencies.schemas import shared as _shared
 from specmaker_core.agents.review_flow import resume_review as _resume_review
 from specmaker_core.agents.review_flow import start_review as _start_review
 from specmaker_core.agents.reviewer import REVIEWER_NAME
-from specmaker_core.contracts.documents import Manuscript, ReviewReport
 from specmaker_core.durable.dbos_boot import launch_dbos
 from specmaker_core.persistence.metadata import build_review_metadata
 from specmaker_core.persistence.storage import open_db, version_stamp
@@ -33,8 +33,8 @@ class RunToken:
     """Opaque token containing identifiers required to resume a deferred review."""
 
     run_id: str
-    project_context: ProjectContext
-    manuscript: Manuscript
+    project_context: _shared.ProjectContext
+    manuscript: _documents.Manuscript
     message_history: list[ModelMessage]
     approvals_requested: int = 0
     approvals_granted: int = 0
@@ -63,7 +63,9 @@ class Deferred(Generic[T]):  # noqa: UP046
 RunOutcome = Completed[T] | Deferred[T]
 
 
-async def review(context: ProjectContext, manuscript: Manuscript) -> RunOutcome[ReviewReport]:
+async def review(
+    context: _shared.ProjectContext, manuscript: _documents.Manuscript
+) -> RunOutcome[_documents.ReviewReport]:
     """Launch the reviewer agent and return a structured outcome."""
     launch_dbos()
     result = await _start_review(manuscript)
@@ -76,7 +78,9 @@ async def review(context: ProjectContext, manuscript: Manuscript) -> RunOutcome[
     )
 
 
-async def resume(token: RunToken, results: DeferredToolResults) -> RunOutcome[ReviewReport]:
+async def resume(
+    token: RunToken, results: DeferredToolResults
+) -> RunOutcome[_documents.ReviewReport]:
     """Resume a previously deferred review with collected results/approvals."""
     launch_dbos()
     result = await _resume_review(token.message_history, results)
@@ -96,12 +100,12 @@ def list_agents() -> list[str]:
 
 def _result_to_outcome(
     *,
-    context: ProjectContext,
-    manuscript: Manuscript,
-    result: AgentRunResult[ReviewReport | DeferredToolRequests],
+    context: _shared.ProjectContext,
+    manuscript: _documents.Manuscript,
+    result: AgentRunResult[_documents.ReviewReport | DeferredToolRequests],
     prior_token: RunToken | None,
     results: DeferredToolResults | None,
-) -> RunOutcome[ReviewReport]:
+) -> RunOutcome[_documents.ReviewReport]:
     output = result.output
     messages = result.all_messages()
     approvals_requested = prior_token.approvals_requested if prior_token else 0
@@ -124,10 +128,7 @@ def _result_to_outcome(
         )
         return Deferred(requests=output, token=updated_token)
 
-    if not isinstance(output, ReviewReport):  # pragma: no cover - defensive branch
-        msg = f"Unexpected reviewer output type: {type(output)!r}"
-        raise TypeError(msg)
-
+    # Type narrowing ensures output is ReviewReport at this point
     completion = Completed(
         value=output,
         run_id=run_id,
@@ -153,7 +154,7 @@ def _extract_run_id(result: AgentRunResult[object]) -> str | None:
     metadata = getattr(result, "metadata", None)
     if isinstance(metadata, dict):
         for key in ("workflow_run_id", "run_id", "dbos_run_id"):
-            value = metadata.get(key)
+            value = metadata.get(key)  # type: ignore[reportUnknownMemberType]
             if isinstance(value, str) and value:
                 return value
     return None
@@ -181,9 +182,9 @@ def _count_approvals_granted(results: DeferredToolResults) -> int:
 
 
 def _persist_completion(
-    context: ProjectContext,
-    manuscript: Manuscript,
-    completion: Completed[ReviewReport],
+    context: _shared.ProjectContext,
+    manuscript: _documents.Manuscript,
+    completion: Completed[_documents.ReviewReport],
 ) -> None:
     connection = open_db()
     try:
@@ -201,14 +202,3 @@ def _persist_completion(
         save_review_record(connection, metadata)
     finally:
         connection.close()
-
-
-__all__ = [
-    "Completed",
-    "Deferred",
-    "RunOutcome",
-    "RunToken",
-    "list_agents",
-    "resume",
-    "review",
-]

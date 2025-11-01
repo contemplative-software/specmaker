@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import datetime
 import uuid
+from datetime import UTC
 from typing import Literal
 
 import pydantic
@@ -18,7 +19,9 @@ class DocumentDraft(pydantic.BaseModel):
     summary: str = pydantic.Field(min_length=1)
     sections: list[str] = pydantic.Field(default_factory=list)
     style_rules: str = pydantic.Field(default="google", min_length=1)
-    created_at: datetime.datetime = pydantic.Field(default_factory=datetime.datetime.utcnow)
+    created_at: datetime.datetime = pydantic.Field(
+        default_factory=lambda: datetime.datetime.now(UTC)
+    )
 
 
 class Manuscript(pydantic.BaseModel):
@@ -29,7 +32,9 @@ class Manuscript(pydantic.BaseModel):
     title: str = pydantic.Field(min_length=1)
     content_markdown: str = pydantic.Field(min_length=1)
     style_rules: str = pydantic.Field(default="google", min_length=1)
-    created_at: datetime.datetime = pydantic.Field(default_factory=datetime.datetime.utcnow)
+    created_at: datetime.datetime = pydantic.Field(
+        default_factory=lambda: datetime.datetime.now(UTC)
+    )
 
 
 class ReviewIssue(pydantic.BaseModel):
@@ -51,7 +56,9 @@ class ReviewReport(pydantic.BaseModel):
 
     status: Literal["pass", "changes_required", "blocked"]
     summary: str = pydantic.Field(min_length=1)
-    issues: list[ReviewIssue] = pydantic.Field(default_factory=list)
+    issues: list[ReviewIssue] = pydantic.Field(default_factory=lambda: [])
     style_rules: str = pydantic.Field(default="google", min_length=1)
     confidence_percent: float = pydantic.Field(default=0.0, ge=0.0, le=100.0)
-    created_at: datetime.datetime = pydantic.Field(default_factory=datetime.datetime.utcnow)
+    created_at: datetime.datetime = pydantic.Field(
+        default_factory=lambda: datetime.datetime.now(UTC)
+    )

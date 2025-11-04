@@ -1,4 +1,17 @@
-"""Persistence helpers for deterministic SQLite review storage."""
+"""Persistence helpers for deterministic SQLite review storage.
+
+Schema Design
+-------------
+The review_records table uses a composite unique constraint on (project_name, version, run_id)
+to prevent data loss when multiple review runs complete within the same second. The version
+field uses second-level timestamps, so run_id distinguishes concurrent completions.
+
+Insert Semantics
+----------------
+Uses INSERT ... ON CONFLICT DO UPDATE to provide idempotent saves: re-saving the same
+(project_name, version, run_id) tuple updates the existing row rather than failing or
+creating duplicates. This supports retry scenarios and workflow resumption without data loss.
+"""
 
 from __future__ import annotations
 
@@ -24,7 +37,7 @@ CREATE TABLE IF NOT EXISTS review_records (
     project_context_json TEXT NOT NULL,
     manuscript_json TEXT NOT NULL,
     review_report_json TEXT NOT NULL,
-    UNIQUE(project_name, version)
+    UNIQUE(project_name, version, run_id)
 );
 """
 
@@ -34,7 +47,7 @@ CREATE INDEX IF NOT EXISTS idx_review_records_project
 """
 
 INSERT_SQL = """
-INSERT OR REPLACE INTO review_records (
+INSERT INTO review_records (
     record_id,
     project_name,
     version,
@@ -46,7 +59,16 @@ INSERT OR REPLACE INTO review_records (
     project_context_json,
     manuscript_json,
     review_report_json
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+ON CONFLICT(project_name, version, run_id) DO UPDATE SET
+    record_id=excluded.record_id,
+    agent_name=excluded.agent_name,
+    created_at=excluded.created_at,
+    approvals_requested=excluded.approvals_requested,
+    approvals_granted=excluded.approvals_granted,
+    project_context_json=excluded.project_context_json,
+    manuscript_json=excluded.manuscript_json,
+    review_report_json=excluded.review_report_json;
 """
 
 SELECT_ALL_SQL = """
@@ -75,7 +97,13 @@ def ensure_schema(connection: sqlite3.Connection) -> None:
 
 
 def save_review_record(connection: sqlite3.Connection, metadata: ReviewMetadata) -> None:
-    """Persist a review record deterministically."""
+    """Persist a review record with idempotent upsert semantics.
+
+    Creates or updates a review record based on (project_name, version, run_id).
+    If a record with the same composite key exists, all fields are updated rather
+    than creating a duplicate. This supports retry scenarios and workflow resumption
+    without data loss or constraint violations.
+    """
     ensure_schema(connection)
     json_payload = metadata_to_json(metadata)
     created_at = metadata.created_at.astimezone(datetime.UTC).isoformat()

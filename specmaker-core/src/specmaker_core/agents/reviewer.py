@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Final
 
+import jinja2
 from pydantic_ai import Agent, ApprovalRequired, DeferredToolRequests, RunContext
 
 from specmaker_core._dependencies.schemas import documents as _documents
@@ -11,11 +13,15 @@ from specmaker_core._dependencies.schemas import documents as _documents
 DEFAULT_REVIEWER_MODEL: Final[str] = "openai:gpt-5"
 REVIEWER_NAME: Final[str] = "reviewer"
 
-REVIEWER_INSTRUCTIONS: Final[str] = (
-    "You are a meticulous technical reviewer."
-    " Provide concise written feedback with clear findings,"
-    " structured severity, and actionable recommendations."
-)
+
+def _load_reviewer_instructions() -> str:
+    """Load and render the reviewer agent instructions from the template."""
+    template_dir = Path(__file__).parents[1] / "_dependencies" / "templates"
+    template_path = template_dir / "reviewer.jinja2"
+    template_content = template_path.read_text(encoding="utf-8")
+    template = jinja2.Template(template_content)
+    return template.render().strip()
+
 
 _reviewer_instance: Agent[None, _documents.ReviewReport | DeferredToolRequests] | None = None
 
@@ -27,7 +33,7 @@ def get_reviewer() -> Agent[None, _documents.ReviewReport | DeferredToolRequests
         _reviewer_instance = Agent(
             DEFAULT_REVIEWER_MODEL,
             name=REVIEWER_NAME,
-            instructions=REVIEWER_INSTRUCTIONS,
+            instructions=_load_reviewer_instructions(),
             output_type=[_documents.ReviewReport, DeferredToolRequests],
         )
         _reviewer_instance.tool(request_approvals)

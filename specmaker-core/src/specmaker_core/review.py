@@ -15,10 +15,10 @@ from pydantic_ai.run import AgentRunResult
 
 from specmaker_core._dependencies.schemas import documents as _documents
 from specmaker_core._dependencies.schemas import shared as _shared
-from specmaker_core.agents.review_flow import resume_review as _resume_review
-from specmaker_core.agents.review_flow import start_review as _start_review
 from specmaker_core.agents.reviewer import REVIEWER_NAME
 from specmaker_core.durable.dbos_boot import launch_dbos
+from specmaker_core.durable.review_flow import resume_review as _resume_review
+from specmaker_core.durable.review_flow import start_review as _start_review
 from specmaker_core.persistence.metadata import build_review_metadata
 from specmaker_core.persistence.storage import open_db, version_stamp
 from specmaker_core.toolsets.persistence_tools import save_review_record

@@ -13,6 +13,7 @@ from pydantic_ai.messages import ToolCallPart
 
 from specmaker_core._dependencies.schemas import documents as _documents
 from specmaker_core._dependencies.schemas import shared as _shared
+from specmaker_core.agents import reviewer as _reviewer
 from specmaker_core.persistence import metadata as _metadata
 from specmaker_core.persistence import storage as _storage
 from specmaker_core.persistence.storage import open_db
@@ -180,6 +181,50 @@ async def test_review_deferred_resume_roundtrip(
 def test_list_agents_includes_reviewer() -> None:
     agents = list_agents()
     assert "reviewer" in agents
+
+
+@pytest.mark.asyncio
+async def test_extract_run_id_from_metadata_dict(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test _extract_run_id when run_id is in result.metadata dict."""
+    monkeypatch.chdir(tmp_path)
+    context = _project_context(tmp_path)
+    manuscript = _manuscript()
+    report = _report()
+
+    @dataclass
+    class MetadataRunResult:
+        output: Any
+        _messages: list[Any]
+        _timestamp: datetime.datetime
+        metadata: dict[str, str]
+
+        def all_messages(self) -> list[Any]:
+            return list(self._messages)
+
+        def timestamp(self) -> datetime.datetime:
+            return self._timestamp
+
+    timestamp = datetime.datetime.now(datetime.UTC)
+    stub_result = MetadataRunResult(
+        report,
+        [],
+        timestamp,
+        {"run_id": "run-from-metadata"},
+    )
+
+    async def fake_start_review(arg: _documents.Manuscript) -> MetadataRunResult:
+        await asyncio.sleep(0)
+        return stub_result
+
+    monkeypatch.setattr(review_module, "launch_dbos", lambda: None)
+    monkeypatch.setattr(review_module, "_start_review", fake_start_review)
+
+    outcome = await review(context, manuscript)
+    assert isinstance(outcome, Completed)
+    assert outcome.run_id == "run-from-metadata"
 
 
 @pytest.mark.asyncio
@@ -469,3 +514,123 @@ def test_persistence_same_run_upsert_updates(
         assert updated_granted == 2
     finally:
         connection.close()
+
+
+def test_load_review_records_empty(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test loading records from an empty database."""
+    monkeypatch.chdir(tmp_path)
+    connection = open_db()
+    try:
+        records = _persistence_tools.load_review_records(connection)
+        assert records == []
+    finally:
+        connection.close()
+
+
+def test_load_review_records_with_data(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test loading persisted review records."""
+    monkeypatch.chdir(tmp_path)
+    context = _project_context(tmp_path)
+    manuscript = _manuscript()
+    report = _report()
+
+    timestamp = datetime.datetime.now(datetime.UTC)
+    version = _storage.version_stamp(timestamp)
+    run_id = "run-load-test"
+
+    metadata = _metadata.ReviewMetadata(
+        record_id="rec-load",
+        project_context=context,
+        manuscript=manuscript,
+        review_report=report,
+        run_id=run_id,
+        agent_name="reviewer",
+        version=version,
+        created_at=timestamp,
+        approvals_requested=0,
+        approvals_granted=0,
+    )
+
+    connection = open_db()
+    try:
+        _persistence_tools.save_review_record(connection, metadata)
+
+        # Load all records
+        records = _persistence_tools.load_review_records(connection)
+        assert len(records) == 1
+        assert records[0].run_id == run_id
+        assert records[0].project_context.project_name == context.project_name
+
+        # Load filtered by project name
+        records_filtered = _persistence_tools.load_review_records(
+            connection, project_name=context.project_name
+        )
+        assert len(records_filtered) == 1
+        assert records_filtered[0].run_id == run_id
+    finally:
+        connection.close()
+
+
+def test_create_trivial_review() -> None:
+    """Test the deterministic placeholder review generator."""
+    manuscript = _manuscript()
+    review_report = _reviewer.create_trivial_review(manuscript)
+
+    assert review_report.status == "pass"
+    assert manuscript.title in review_report.summary
+    assert review_report.issues == []
+    assert review_report.style_rules == manuscript.style_rules
+    assert review_report.confidence_percent == 75.0
+
+
+def test_request_approvals_when_approved() -> None:
+    """Test request_approvals tool when ctx.tool_call_approved is True."""
+    from unittest.mock import Mock
+
+    from pydantic_ai import RunContext
+
+    mock_ctx = Mock(spec=RunContext)
+    mock_ctx.tool_call_approved = True
+
+    result = _reviewer.request_approvals(mock_ctx, ["item1", "item2"])
+    assert result == "Approved: item1, item2"
+
+    # Test with empty list
+    result_empty = _reviewer.request_approvals(mock_ctx, [])
+    assert result_empty == "Approved: no specific items"
+
+
+def test_request_approvals_when_not_approved() -> None:
+    """Test request_approvals tool raises ApprovalRequired when not approved."""
+    from unittest.mock import Mock
+
+    from pydantic_ai import ApprovalRequired, RunContext
+
+    mock_ctx = Mock(spec=RunContext)
+    mock_ctx.tool_call_approved = False
+
+    with pytest.raises(ApprovalRequired):
+        _reviewer.request_approvals(mock_ctx, ["item1"])
+
+
+def test_get_reviewer_lazy_initialization(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test that get_reviewer() returns an Agent and registers tools."""
+    # Mock OpenAI API key to avoid requiring real credentials
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key-for-testing")
+
+    agent = _reviewer.get_reviewer()
+
+    # Should return an Agent instance
+    assert agent is not None
+    assert agent.name == "reviewer"
+    assert agent._instructions is not None
+
+    # Calling again should return same instance
+    agent2 = _reviewer.get_reviewer()
+    assert agent is agent2

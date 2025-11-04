@@ -2178,6 +2178,7 @@ dependencies = [
     { name = "pydantic" },
     { name = "pydantic-ai", extra = ["dbos"] },
     { name = "pydantic-settings" },
+    { name = "sqlalchemy" },
 ]
 
 [package.dev-dependencies]
@@ -2197,6 +2198,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.9.2" },
     { name = "pydantic-ai", extras = ["dbos"], specifier = ">=0.0.17" },
     { name = "pydantic-settings", specifier = ">=2.11.0" },
+    { name = "sqlalchemy", specifier = ">=2.0.44" },
 ]
 
 [package.metadata.requires-dev]

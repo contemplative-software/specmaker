@@ -9,6 +9,8 @@ dependencies = [
     "jinja2>=3.1.6",
     "pydantic>=2.9.2",
     "pydantic-settings>=2.11.0",
+    "pydantic-ai[dbos]>=0.0.17",
+    "sqlalchemy>=2.0.44",
 ]
 
 [build-system]
@@ -23,6 +25,7 @@ dev = [
     "pre-commit>=4.2.0",
     "pyright>=1.1.406",
     "pytest>=8.4.0",
+    "pytest-asyncio>=0.24.0",
     "diff-cover>=9.2.0",
     "pytest-cov>=6.0.0",
     "ruff>=0.11.12",
@@ -100,12 +103,25 @@ reportUnusedImport = true
 reportUnusedVariable = "warning"
 reportPrivateUsage = "none"
 
+# Per-file ignores - allow unused imports in __init__.py for public API re-exports
+[[tool.pyright.executionEnvironments]]
+root = "src"
+include = ["**/__init__.py"]
+reportUnusedImport = false
+
 # Typed library support
 useLibraryCodeForTypes = true
 
 # Performance
 venvPath = "."
 venv = ".venv"
+
+[tool.mypy]
+python_version = "3.13"
+
+[[tool.mypy.overrides]]
+module = ["pydantic_ai", "pydantic_ai.*", "pydantic_settings", "dbos"]
+ignore_missing_imports = true
 
 [tool.coverage.run]
 source = ["src/specmaker_core"]

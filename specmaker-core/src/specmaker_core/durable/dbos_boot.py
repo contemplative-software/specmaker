@@ -1,1 +1,81 @@
-"""DBOS bootstrap for launching durable workflows and configuring SQLite URL."""
+"""DBOS bootstrap utilities for configuring durable execution.
+
+This module centralizes the DBOS bootstrap logic so it can be reused by CLI
+entrypoints, scripts, and tests. By default the bootstrap resolves
+configuration via :class:`specmaker_core.config.settings.Settings` which keeps
+the DB URL aligned with the application defaults (.specmaker/specmaker.db).
+"""
+
+from __future__ import annotations
+
+import logging
+from collections.abc import AsyncIterable
+from typing import Any, Final
+
+from dbos import DBOS, DBOSConfig
+from pydantic_ai import AgentStreamEvent, RunContext
+from pydantic_ai.durable_exec.dbos import DBOSAgent, StepConfig
+
+from specmaker_core.agents.reviewer import REVIEWER_NAME, get_reviewer
+from specmaker_core.config.settings import Settings, get_settings
+
+LOGGER = logging.getLogger(__name__)
+
+DBOS_APP_NAME: Final[str] = "specmaker_core"
+MODEL_STEP_CONFIG: Final[StepConfig] = StepConfig(max_attempts=3)
+MCP_STEP_CONFIG: Final[StepConfig] = StepConfig(max_attempts=1)
+
+_dbos_reviewer_instance: DBOSAgent[None, Any] | None = None
+
+
+def build_dbos_config(settings: Settings) -> DBOSConfig:
+    """Return the DBOS configuration derived from the provided settings."""
+    return {
+        "name": DBOS_APP_NAME,
+        "system_database_url": settings.system_database_url,
+    }
+
+
+def launch_dbos(settings: Settings | None = None) -> None:
+    """Initialise DBOS with the configured SQLite URL and launch it.
+
+    Args:
+        settings: Optional settings instance. When not provided the cached
+            application settings are used via :func:`get_settings`.
+    """
+    effective_settings = settings or get_settings()
+    config = build_dbos_config(effective_settings)
+
+    # Extract values for logging to avoid TypedDict optional key access issues
+    dbos_name = config.get("name", DBOS_APP_NAME)
+    database_url = config.get("system_database_url", effective_settings.system_database_url)
+
+    LOGGER.debug(
+        "Launching DBOS",
+        extra={"dbos_name": dbos_name, "database_url": database_url},
+    )
+
+    DBOS(config=config)
+    DBOS.launch()
+
+
+def get_dbos_reviewer() -> DBOSAgent[None, Any]:
+    """Lazily instantiate and return the durable reviewer agent."""
+    global _dbos_reviewer_instance
+    if _dbos_reviewer_instance is None:
+        _dbos_reviewer_instance = DBOSAgent(
+            get_reviewer(),
+            model_step_config=MODEL_STEP_CONFIG,
+            mcp_step_config=MCP_STEP_CONFIG,
+        )
+    return _dbos_reviewer_instance
+
+
+async def event_stream_handler(
+    ctx: RunContext[Any],
+    stream: AsyncIterable[AgentStreamEvent],
+) -> None:
+    """Log streaming events for visibility during durable runs."""
+    agent_name = getattr(ctx, "agent_name", REVIEWER_NAME)
+    async for event in stream:
+        LOGGER.info("[%s] %s", agent_name, event)

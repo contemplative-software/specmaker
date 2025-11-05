@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: >-
+  If you use SpecMaker in your work, please cite this software using the metadata below.
+title: SpecMaker
+version: 0.0.1
+date-released: 2025-11-05
+authors:
+  - name: Darec Stowell
+  - name: SpecMaker contributors
+license: MIT
+keywords:
+  - multi-agent
+  - documentation
+  - pydantic
+  - python
+
+

@@ -1,0 +1,25 @@
+name: Feature request
+description: Suggest an idea or enhancement for SpecMaker
+labels: [enhancement]
+body:
+  - type: textarea
+    attributes:
+      label: Problem statement
+      description: What problem would this feature solve?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Proposed solution
+      description: Describe your proposed solution and any API changes
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Alternatives considered
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: Links, screenshots, prior art
+
+

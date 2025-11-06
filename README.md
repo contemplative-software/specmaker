@@ -2,7 +2,7 @@
 
 SpecMaker is a multi‑agent documentation system that guides engineers through structured, human‑in‑the‑loop flows to produce high‑quality, consistent, and AI‑readable specs.
 
-This repository contains the Python core library powering SpecMaker. It builds on modern Python tooling, type‑safety, and validation with Pydantic v2.
+This repository contains the Python core library powering SpecMaker. It builds on modern Python tooling, type‑safety, and validation with Pydantic v2, as well as agent orchestration with PydanticAI and DBOS.
 
 ## Status
 
@@ -57,5 +57,6 @@ If you use SpecMaker in academic work, please see [CITATION.cff](CITATION.cff).
 ## Acknowledgements
 
 Inspired by excellent open‑source practices from Pydantic and others. Pydantic repository: `https://github.com/pydantic/pydantic/tree/main`.
+
 
 

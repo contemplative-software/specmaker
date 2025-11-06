@@ -15,6 +15,19 @@ Alpha (v0.0.1). Interfaces and APIs may change.
  - Durable orchestration via DBOS + PydanticAI (pause/resume, retries)
  - SQLite‑backed persistence and metadata extraction
 
+## How it works
+
+Currently, SpecMaker ships the `/review` workflow. Provide an existing manuscript; the Reviewer agent evaluates it, may request clarifications from you or loop with the Writer for edits; on approval, results are persisted.
+
+```mermaid
+flowchart TD
+  A["User provides manuscript"] --> B["/review workflow"]
+  B --> C["Reviewer (agent)"]
+  C -->|needs clarification| A2["Collect clarifications"] --> C
+  C -->|edits requested| D["Writer (agent)"] --> C
+  C -->|approved| E["Persist result"]
+```
+
 ## Getting Started (from source)
 
 This project uses the `uv` Python toolchain for dependency management and execution.

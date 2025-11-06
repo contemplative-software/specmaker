@@ -6,7 +6,7 @@ SpecMaker follows modern Python practices and uses the `uv` toolchain for depend
 
 ## Prerequisites
 
-- Python 3.10+
+- Python 3.13+
 - [`uv`](https://github.com/astral-sh/uv) installed
 - Git and a GitHub account
 - Optional: Docker (for containerized workflows)
@@ -77,5 +77,6 @@ If you discover a security vulnerability, please follow the steps in [.github/SE
 ## License
 
 By contributing, you agree that your contributions will be licensed under the MIT License.
+
 
 

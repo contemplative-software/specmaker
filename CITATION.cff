@@ -9,9 +9,14 @@ authors:
   - name: SpecMaker contributors
 license: MIT
 keywords:
+  - specification
+  - spec-driven development
   - multi-agent
   - documentation
   - pydantic
+  - pydantic-ai
+  - dbos
   - python
+
 
 

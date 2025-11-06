@@ -2,6 +2,7 @@
 
 from specmaker_core._dependencies.schemas import documents as _documents
 from specmaker_core._dependencies.schemas import shared as _shared
+from specmaker_core.init import init
 from specmaker_core.review import (
     Completed,
     Deferred,

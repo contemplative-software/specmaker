@@ -1,6 +1,6 @@
 # SpecMaker
 
-SpecMaker is a multi‑agent documentation system that guides engineers through structured, human‑in‑the‑loop flows to produce high‑quality, consistent, and AI‑readable specs.
+SpecMaker is a multi‑agent documentation system that guides engineers through structured, human‑in‑the‑loop flows to produce high‑quality, consistent, and AI‑readable specs. It is a companion at the beginning of spec‑driven development — Requirements → Design → Tasks — helping you gain confidence in your problem definitions (requirements), sharpen design decisions, and produce a concrete implementation plan (tasks).
 
 This repository contains the Python core library powering SpecMaker. It builds on modern Python tooling, type‑safety, and validation with Pydantic v2, as well as agent orchestration with PydanticAI and DBOS.
 
@@ -21,7 +21,7 @@ Currently, SpecMaker ships the `/review` workflow. Provide an existing manuscrip
 
 ```mermaid
 flowchart TD
-  A["User provides manuscript"] --> B["/review workflow"]
+  A["User provides prompt/doc"] --> B["/review workflow"]
   B --> C["Reviewer (agent)"]
   C -->|needs clarification| A2["Collect clarifications"] --> C
   C -->|edits requested| D["Writer (agent)"] --> C

@@ -10,10 +10,10 @@ Alpha (v0.0.1). Interfaces and APIs may change.
 
 ## Features
 
-- Structured, stepwise authoring flows
-- Strong typing and validation with Pydantic v2
-- Settings management via pydantic‑settings
-- Extensible agent pipeline architecture
+ - Multi‑agent authoring flow (Architect → Writer → Reviewer)
+ - Human‑in‑the‑loop checkpoints and approvals
+ - Durable orchestration via DBOS + PydanticAI (pause/resume, retries)
+ - SQLite‑backed persistence and metadata extraction
 
 ## Getting Started (from source)
 
@@ -27,13 +27,13 @@ cd specmaker
 # Set up the Python environment
 uv sync
 
-# Run tests
-uv run pytest -q
-
-# Lint, format, type-check
-uv run ruff format .
-uv run ruff check .
-uv run pyright
+ # Run tests
+uv run --frozen pytest -q
+ 
+ # Lint, format, type-check
+uv run --frozen ruff format .
+uv run --frozen ruff check .
+uv run --frozen pyright
 ```
 
 See `specmaker-core/README.md` for additional development notes and Docker/Devcontainer usage.
@@ -56,7 +56,7 @@ If you use SpecMaker in academic work, please see [CITATION.cff](CITATION.cff).
 
 ## Acknowledgements
 
-Inspired by excellent open‑source practices from Pydantic and others. Pydantic repository: `https://github.com/pydantic/pydantic/tree/main`.
+Inspired by excellent open‑source practices from [Pydantic](https://github.com/pydantic/pydantic) and others.
 
 
 

@@ -1,5 +1,7 @@
 <div align="center">
 
+  <img src="SpecMakerLogoFilled.svg" alt="SpecMaker Logo" width="200"/>
+
   <h3>Multi‑agent documentation review for spec‑driven development</h3>
 
 </div>

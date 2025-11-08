@@ -20,7 +20,7 @@
 
 **Website**: [https://specmaker.dev](https://specmaker.dev)
 
-**CLI**: Coming Soon!
+**CLI**: _Coming Soon!_
 
 ---
 

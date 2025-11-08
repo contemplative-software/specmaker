@@ -33,6 +33,13 @@ jobs:
       - name: Run Tests with Coverage
         run: cd specmaker-core && uv run --frozen pytest --cov=src/specmaker_core --cov-report=xml --cov-report=term-missing --junitxml=pytest.xml --cov-fail-under=0
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: specmaker-core/coverage.xml
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Fetch base branch for diff coverage
         run: |
           git fetch --no-tags --prune origin +refs/heads/main:refs/remotes/origin/main

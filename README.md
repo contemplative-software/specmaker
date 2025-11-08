@@ -11,6 +11,8 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="license"></a>
   <img src="https://img.shields.io/badge/python-3.13%2B-blue" alt="Python">
   <img src="https://img.shields.io/badge/status-alpha-orange" alt="status">
+  <a href="https://github.com/contemplative-software/specmaker/actions/workflows/ci.yml"><img src="https://github.com/contemplative-software/specmaker/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://codecov.io/gh/contemplative-software/specmaker"><img src="https://codecov.io/gh/contemplative-software/specmaker/branch/main/graph/badge.svg" alt="Coverage"></a>
 
 </div>
 

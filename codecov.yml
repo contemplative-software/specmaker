@@ -1,0 +1,47 @@
+# Codecov configuration
+# Docs: https://docs.codecov.com/docs/codecov-yaml
+
+coverage:
+  status:
+    # Overall project coverage
+    project:
+      default:
+        target: 90%  # Match pyproject.toml fail_under
+        threshold: 1%  # Allow 1% drop before failing
+        if_ci_failed: error
+
+    # Coverage for new code in PR (patch coverage)
+    patch:
+      default:
+        target: 90%  # New code should be well-tested
+        threshold: 1%
+        if_ci_failed: error
+
+  precision: 2  # Match pyproject.toml precision
+  round: down
+  range: 80..100  # Green if >80%, red if <80%
+
+comment:
+  # PR comment behavior
+  layout: "header, diff, components"
+  behavior: default  # Update comment on each push
+  require_changes: false  # Always comment
+  require_base: no
+  require_head: yes
+
+# Ignore paths (match pyproject.toml omit patterns)
+ignore:
+  - "tests/*"
+  - "**/__pycache__/*"
+  - "**/node_modules/*"
+  - "**/.venv/*"
+  - "**/docker/*"
+  - "**/scripts/*"
+
+# Codecov flags (useful for monorepo or multiple test suites)
+flags:
+  core:
+    paths:
+      - specmaker-core/src/
+    carryforward: true  # Use previous upload if this flag is missing
+

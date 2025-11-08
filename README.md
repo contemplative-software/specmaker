@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="SpecMakerLogoFilled.svg" alt="SpecMaker Logo" width="200"/>
+  <img src="SpecMakerLogoFilled.svg" alt="SpecMaker Logo" width="300"/>
 
   <h3>Multi‑agent documentation review for spec‑driven development</h3>
 

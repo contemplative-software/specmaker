@@ -55,12 +55,3 @@ jobs:
           fi
           uv run --frozen diff-cover coverage.xml --compare-branch=origin/main --fail-under=90 || \
           uv run --frozen diff-cover coverage.xml --compare-branch=$(git rev-list --max-parents=0 HEAD | tail -n1) --fail-under=90
-
-      - name: Coverage comment (changed files only)
-        if: ${{ always() && github.event_name == 'pull_request' }}
-        uses: MishaKav/pytest-coverage-comment@main
-        with:
-          github-token: ${{ github.token }}
-          pytest-coverage-path: specmaker-core/coverage.xml
-          junitxml-path: specmaker-core/pytest.xml
-          report-only-changed-files: false

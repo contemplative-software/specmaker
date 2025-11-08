@@ -1,3 +1,23 @@
+<div align="center">
+
+  <h3>Multi‑agent documentation review for spec‑driven development</h3>
+
+</div>
+
+<div align="center">
+
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="license"></a>
+  <img src="https://img.shields.io/badge/python-3.13%2B-blue" alt="Python">
+  <img src="https://img.shields.io/badge/status-alpha-orange" alt="status">
+
+</div>
+
+---
+
+**Website**: [https://specmaker.dev](https://specmaker.dev)
+
+---
+
 # SpecMaker
 
 SpecMaker is a multi‑agent documentation system that guides engineers through structured, human‑in‑the‑loop flows to produce high‑quality, consistent, and AI‑readable specs. It is a companion at the beginning of spec‑driven development — Requirements → Design → Tasks — helping you gain confidence in your problem definitions (requirements), sharpen design decisions, and produce a concrete implementation plan (tasks). Before handing your spec to a coding agent, SpecMaker helps you develop a strong mental model of what you’re building and align that intent with AI.
@@ -26,6 +46,23 @@ flowchart TD
   C -->|needs clarification| A2["Collect clarifications"] --> C
   C -->|edits requested| D["Writer (agent)"] --> C
   C -->|approved| E["Persist result"]
+```
+
+**`/init` command** — Initialize SpecMaker for a project by collecting user and project details, then creating the `.specmaker/` folder with initial configuration and metadata files.
+
+### Coming soon
+
+**`/write-and-review` workflow** — Full authoring flow from outline to final manuscript. The Documentation Architect drafts an outline (with your approval), the Technical Writer produces the manuscript, and the Reviewer evaluates and may loop for edits or clarifications.
+
+```mermaid
+flowchart TD
+  UI["User Input"] --> WF["DBOS Workflow: /write-and-review"]
+  WF --> ARCH["Documentation Architect (Agent)"]
+  ARCH -->|outline approved - Deferred Tool| WRITER["Technical Writer (Agent)"]
+  WRITER --> REVIEWER["Reviewer (Agent)"]
+  REVIEWER -->|needs user clarification - Deferred Tool| UI_CLAR["Collect clarifications"] --> WRITER
+  REVIEWER -->|edits requested| WRITER
+  REVIEWER -->|approved| PERSIST["Persist + Metadata Extraction (Step)"]
 ```
 
 ## Getting Started (from source)

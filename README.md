@@ -10,10 +10,10 @@ Alpha (v0.0.1). Interfaces and APIs may change.
 
 ## Features
 
- - Multi‑agent authoring flow (Architect → Writer → Reviewer)
- - Human‑in‑the‑loop checkpoints and approvals
- - Durable orchestration via DBOS + PydanticAI (pause/resume, retries)
- - SQLite‑backed persistence and metadata extraction
+- Multi‑agent authoring flow (Architect → Writer → Reviewer)
+- Human‑in‑the‑loop checkpoints and approvals
+- Durable orchestration via DBOS + PydanticAI (pause/resume, retries)
+- SQLite‑backed persistence and metadata extraction
 
 ## How it works
 
@@ -40,10 +40,10 @@ cd specmaker
 # Set up the Python environment
 uv sync
 
- # Run tests
+# Run tests
 uv run --frozen pytest -q
- 
- # Lint, format, type-check
+
+# Lint, format, type-check
 uv run --frozen ruff format .
 uv run --frozen ruff check .
 uv run --frozen pyright

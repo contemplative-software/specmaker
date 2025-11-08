@@ -100,7 +100,7 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for gu
 
 ## Security
 
-If you believe you’ve found a security vulnerability, please follow the process in [.github/SECURITY.md](.github/SECURITY.md).
+If you believe you’ve found a security vulnerability, please follow the process in [SECURITY.md](.github/SECURITY.md).
 
 ## License
 

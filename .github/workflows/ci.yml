@@ -31,7 +31,7 @@ jobs:
         run: cd specmaker-core && uv run --frozen pyright
 
       - name: Run Tests with Coverage
-        run: cd specmaker-core && uv run --frozen pytest --cov=src/specmaker_core --cov-report=xml --cov-report=term-missing --junitxml=pytest.xml --cov-fail-under=0
+        run: cd specmaker-core && uv run --frozen pytest --cov --cov-branch --cov-report=xml --cov-report=term-missing --junitxml=pytest.xml --cov-fail-under=0
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5

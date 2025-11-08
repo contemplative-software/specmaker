@@ -8,7 +8,7 @@ import pytest
 import specmaker_core._dependencies.errors as errors
 import specmaker_core._dependencies.schemas.shared as shared
 import specmaker_core._dependencies.utils.paths as paths
-import specmaker_core.init as init_module
+from specmaker_core import init
 
 
 @pytest.fixture()
@@ -26,13 +26,13 @@ def project_context(tmp_path: pathlib.Path) -> shared.ProjectContext:
 
 
 def test_init_creates_specmaker_directory(project_context: shared.ProjectContext) -> None:
-    init_module.init(project_context)
+    init(project_context)
     spec_dir = project_context.repository_root / ".specmaker"
     assert spec_dir.exists()
 
 
 def test_init_creates_files(project_context: shared.ProjectContext) -> None:
-    init_module.init(project_context)
+    init(project_context)
     spec_dir = project_context.repository_root / ".specmaker"
     assert (spec_dir / "project_context.json").exists()
     assert (spec_dir / "README.md").exists()
@@ -40,10 +40,10 @@ def test_init_creates_files(project_context: shared.ProjectContext) -> None:
 
 
 def test_idempotent_init(project_context: shared.ProjectContext) -> None:
-    init_module.init(project_context)
+    init(project_context)
     manifest_path_obj = project_context.repository_root / ".specmaker" / "manifest.json"
     content = manifest_path_obj.read_text(encoding="utf-8")
-    init_module.init(project_context)
+    init(project_context)
     assert manifest_path_obj.read_text(encoding="utf-8") == content
 
 
@@ -60,11 +60,11 @@ def test_invalid_repository_root_raises_validation_error(tmp_path: pathlib.Path)
         created_at=datetime.datetime(2024, 1, 1, 0, 0, 0),
     )
     with pytest.raises(errors.ValidationError):
-        init_module.init(context)
+        init(context)
 
 
 def test_project_context_json_round_trip(project_context: shared.ProjectContext) -> None:
-    init_module.init(project_context)
+    init(project_context)
     json_path = paths.project_context_path(project_context.repository_root)
     data = json_path.read_text(encoding="utf-8")
     # Pydantic can parse from JSON directly via model_validate_json
@@ -87,4 +87,4 @@ def test_read_only_path_edge_case(tmp_path: pathlib.Path) -> None:
         created_at=datetime.datetime(2024, 1, 1, 0, 0, 0),
     )
     with pytest.raises(errors.ValidationError):
-        init_module.init(context)
+        init(context)

@@ -121,11 +121,11 @@ def _resolve_title(override: str | None, path: str | None) -> str:
 def _discover_project_root() -> Path:
     """Walk upward from current directory to find project root with .specmaker directory."""
     current = Path.cwd().resolve()
-    project_context_file = paths.SPECMAKER_DIR_NAME / paths.PROJECT_CONTEXT_FILENAME
+    project_context_file = Path(paths.SPECMAKER_DIR_NAME) / Path(paths.PROJECT_CONTEXT_FILENAME)
 
     # Walk up the directory tree looking for .specmaker/project_context.json
     for directory in [current, *current.parents]:
-        specmaker_dir = directory / paths.SPECMAKER_DIR_NAME
+        specmaker_dir = directory / Path(paths.SPECMAKER_DIR_NAME)
         context_file = directory / project_context_file
         if specmaker_dir.is_dir() and context_file.is_file():
             return directory

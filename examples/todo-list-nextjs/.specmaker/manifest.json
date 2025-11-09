@@ -1,0 +1,8 @@
+{
+  "files": [
+    "project_context.json",
+    "README.md"
+  ],
+  "schema": "specmaker.init-manifest",
+  "version": 1
+}

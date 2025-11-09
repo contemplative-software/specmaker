@@ -1,6 +1,6 @@
 {
   "project_name": "Todo List Next.js",
-  "repository_root": "/Users/dstowell/Documents/dev-personal/specmaker/specmaker/examples/todo-list-nextjs",
+  "repository_root": "examples/todo-list-nextjs",
   "description": "A simple todo list application built with Next.js to demonstrate basic CRUD operations",
   "audience": [
     "engineers"

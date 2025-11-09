@@ -1,0 +1,55 @@
+name: Publish specmaker-core (uv)
+
+on:
+  push:
+    tags:
+      - specmaker-v*
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    environment: publish
+    concurrency:
+      group: publish-specmaker-core
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install uv
+        shell: bash
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+
+      - name: Build (uv)
+        working-directory: specmaker-core
+        run: |
+          uv build
+
+      - name: Publish to PyPI (uv)
+        if: ${{ !env.ACT }} # allow local runners to skip
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        working-directory: specmaker-core
+        run: |
+          # Publishes the dists in ./dist to PyPI using the token from env
+          uv publish
+
+      - name: Create GitHub Release and upload artifacts
+        if: success()
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            specmaker-core/dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+

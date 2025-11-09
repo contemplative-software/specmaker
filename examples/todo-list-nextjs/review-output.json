@@ -1,0 +1,79 @@
+{
+  "status": "changes_required",
+  "summary": "Solid, scoped plan with clean component separation and TypeScript usage. However, there’s a critical Next.js App Router client/server boundary issue and a few setup and accessibility gaps that will affect build, styling, and usability.",
+  "issues": [
+    {
+      "id": "8b969850-dabe-490f-bea1-7581f01e2fe9",
+      "category": "accuracy",
+      "severity": "blocking",
+      "message": "TodoItem is imported into a Client Component (TodoList) but is not marked as a client component. In App Router, Client Components cannot import Server Components. This will fail at build/runtime and event handlers won’t work.",
+      "location": "components/TodoItem.tsx (add 'use client' at the top)"
+    },
+    {
+      "id": "b0d9ad45-b2c5-495d-9ea9-991da7000620",
+      "category": "accuracy",
+      "severity": "major",
+      "message": "Path alias '@/...' is used but the tsconfig path mapping isn’t shown. Without it, imports like '@/types/todo' will fail.",
+      "location": "tsconfig.json (compilerOptions.baseUrl='.', paths: { \"@/*\": [\"./*\"] }) and all '@/…' imports"
+    },
+    {
+      "id": "b898dd4f-d405-4ad1-866b-f3b05d1f2e08",
+      "category": "accuracy",
+      "severity": "major",
+      "message": "Tailwind setup details are missing. Without proper content globs and @tailwind imports, styles may be purged or not applied.",
+      "location": "tailwind.config.ts (content: ['./app/**/*.{ts,tsx}','./components/**/*.{ts,tsx}']); app/globals.css (@tailwind base; @tailwind components; @tailwind utilities); app/layout.tsx (import './globals.css')"
+    },
+    {
+      "id": "04f43614-a1f2-4337-a066-35df97943a4a",
+      "category": "style",
+      "severity": "minor",
+      "message": "Use functional state updates to avoid stale state in rapid updates.",
+      "location": "components/TodoList.tsx (setTodos(prev => [...prev, newTodo]); setTodos(prev => prev.map(...)); setTodos(prev => prev.filter(...)))"
+    },
+    {
+      "id": "700edcd6-f0ac-4a78-a0d9-4af501308cc9",
+      "category": "style",
+      "severity": "minor",
+      "message": "Improve accessibility: associate labels with inputs and ensure clear focus states. The checkbox and text input should have labels/aria-labels.",
+      "location": "components/TodoItem.tsx (label for checkbox); components/AddTodo.tsx (label for text input)"
+    },
+    {
+      "id": "603bc5f3-6662-4ba9-bd32-e9b1b09f63b1",
+      "category": "structure",
+      "severity": "minor",
+      "message": "Prefer semantic list markup (<ul>/<li>) for the todo list to aid screen readers.",
+      "location": "components/TodoList.tsx and components/TodoItem.tsx"
+    },
+    {
+      "id": "2253d4cc-39a9-4a55-b6fd-4f5dc20ea016",
+      "category": "style",
+      "severity": "minor",
+      "message": "Handle long todo text to prevent layout breakage.",
+      "location": "components/TodoItem.tsx (e.g., className='break-words' or 'truncate max-w-[...]')"
+    },
+    {
+      "id": "30f54a61-dc4f-48bb-bf3a-be10a17a482b",
+      "category": "clarity",
+      "severity": "minor",
+      "message": "README should include Node/Next/Tailwind versions, Tailwind setup notes, tsconfig alias note, and common scripts.",
+      "location": "README.md"
+    },
+    {
+      "id": "b228b5b2-b47f-4c0a-8577-f4fb193ce3f9",
+      "category": "other",
+      "severity": "minor",
+      "message": "Add standard scripts and tooling for consistency.",
+      "location": "package.json (scripts: dev, build, start, lint, type-check; add ESLint/Prettier config)"
+    },
+    {
+      "id": "bc4b2cea-3f89-4494-a525-9bbdd2d61098",
+      "category": "accuracy",
+      "severity": "minor",
+      "message": "crypto.randomUUID() is fine in modern browsers, but consider a fallback or nanoid if broader support is desired.",
+      "location": "components/TodoList.tsx"
+    }
+  ],
+  "style_rules": "google",
+  "confidence_percent": 86.0,
+  "created_at": "2025-11-09T04:16:56.766688Z"
+}

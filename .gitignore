@@ -241,6 +241,8 @@ pyrightconfig.json
 [Ll]ib64
 [Ll]ocal
 [Ss]cripts
+# Un-ignore project scripts directories
+!**/scripts/
 pyvenv.cfg
 pip-selfcheck.json
 

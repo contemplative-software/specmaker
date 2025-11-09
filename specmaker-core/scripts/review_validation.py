@@ -42,12 +42,19 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="Override manuscript title (defaults to filename or 'Manual Input').",
         default=None,
     )
+    parser.add_argument(
+        "--root",
+        dest="root",
+        help="Repository root directory. If omitted, auto-discovered from current directory.",
+        default=None,
+    )
     return parser.parse_args(argv)
 
 
 async def run(args: argparse.Namespace) -> None:
     """Execute the validation flow using parsed CLI arguments."""
-    context = _load_project_context(Path.cwd())
+    root = _resolve_project_root(args.root)
+    context = _load_project_context(root)
     markdown = _read_input(args.path)
     title = _resolve_title(args.title, args.path)
     manuscript = Manuscript(title=title, content_markdown=markdown, style_rules=context.style_rules)
@@ -109,6 +116,36 @@ def _resolve_title(override: str | None, path: str | None) -> str:
     if path:
         return Path(path).stem
     return "Manual Input"
+
+
+def _discover_project_root() -> Path:
+    """Walk upward from current directory to find project root with .specmaker directory."""
+    current = Path.cwd().resolve()
+    project_context_file = paths.SPECMAKER_DIR_NAME / paths.PROJECT_CONTEXT_FILENAME
+
+    # Walk up the directory tree looking for .specmaker/project_context.json
+    for directory in [current, *current.parents]:
+        specmaker_dir = directory / paths.SPECMAKER_DIR_NAME
+        context_file = directory / project_context_file
+        if specmaker_dir.is_dir() and context_file.is_file():
+            return directory
+
+    msg = (
+        "Could not locate project root. "
+        "Please run this script from within a SpecMaker-initialized project directory, "
+        "or use --root to specify the repository root directory. "
+        "The script looks for a '.specmaker/project_context.json' file by walking up "
+        "from the current directory."
+    )
+    raise FileNotFoundError(msg)
+
+
+def _resolve_project_root(root_arg: str | None) -> Path:
+    """Resolve project root from CLI argument or discovery."""
+    if root_arg:
+        root_path = Path(root_arg)
+        return paths.ensure_repository_root(root_path)
+    return _discover_project_root()
 
 
 def _load_project_context(root: Path) -> ProjectContext:

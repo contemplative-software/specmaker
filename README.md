@@ -63,7 +63,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-  UI["User Input"] --> WF["DBOS Workflow: /write-and-review"]
+  UI["User Input"] --> WF["/write-and-review workflow"]
   WF --> ARCH["Documentation Architect (Agent)"]
   ARCH -->|outline approved - Deferred Tool| WRITER["Technical Writer (Agent)"]
   WRITER --> REVIEWER["Reviewer (Agent)"]

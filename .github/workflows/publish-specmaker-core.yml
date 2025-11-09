@@ -30,7 +30,7 @@ jobs:
           echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
 
       - name: Build (uv)
-        working-directory: specmaker/specmaker-core
+        working-directory: specmaker-core
         run: |
           uv build
 
@@ -38,16 +38,17 @@ jobs:
         if: ${{ !env.ACT }} # allow local runners to skip
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-        working-directory: specmaker/specmaker-core
+        working-directory: specmaker-core
         run: |
           # Publishes the dists in ./dist to PyPI using the token from env
           uv publish
 
       - name: Create GitHub Release and upload artifacts
+        if: success()
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            specmaker/specmaker-core/dist/*
+            specmaker-core/dist/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

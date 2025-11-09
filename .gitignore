@@ -304,3 +304,6 @@ pytest.xml
 
 # SpecMaker
 .specmaker/
+# Allow .specmaker directories in examples/ to be committed
+!examples/**/.specmaker/
+!examples/**/.specmaker/**

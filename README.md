@@ -72,6 +72,13 @@ flowchart TD
   REVIEWER -->|approved| PERSIST["Persist + Metadata Extraction (Step)"]
 ```
 
+## Roadmap
+
+- **Enhanced agent capabilities** — Equip agents with the ability to do research and search the filesystem
+- **Improved agent definition** — Better system prompts and clearer agent roles and responsibilities
+- **Integration examples** — Create examples demonstrating SpecMaker working with Claude, Codex, Cursor agents, and other AI coding assistants
+- **CLI experience** — Wrap it all up in a polished, user-friendly CLI
+
 ## Getting Started (from source)
 
 This project uses the `uv` Python toolchain for dependency management and execution.

@@ -26,8 +26,9 @@ comment:
   layout: "header, diff, components"
   behavior: default  # Update comment on each push
   require_changes: false  # Always comment
-  require_base: no
-  require_head: yes
+  require_base: false  # Don't require base report to post
+  require_head: true  # Must have head report to post
+  hide_project_coverage: false  # Show project coverage changes in PR comments
 
 # Ignore paths (match pyproject.toml omit patterns)
 ignore:

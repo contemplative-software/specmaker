@@ -59,11 +59,11 @@ flowchart TD
 
 ### Coming soon
 
-**`/write-and-review` workflow** — Full authoring flow from outline to final manuscript. The Documentation Architect drafts an outline (with your approval), the Technical Writer produces the manuscript, and the Reviewer evaluates and may loop for edits or clarifications.
+**`/draft` workflow** — Full authoring flow from outline to final manuscript. The Documentation Architect drafts an outline (with your approval), the Technical Writer produces the manuscript, and the Reviewer evaluates and may loop for edits or clarifications.
 
 ```mermaid
 flowchart TD
-  UI["User Input"] --> WF["/write-and-review workflow"]
+  UI["User Input"] --> WF["DBOS Workflow: /draft"]
   WF --> ARCH["Documentation Architect (Agent)"]
   ARCH -->|outline approved - Deferred Tool| WRITER["Technical Writer (Agent)"]
   WRITER --> REVIEWER["Reviewer (Agent)"]
